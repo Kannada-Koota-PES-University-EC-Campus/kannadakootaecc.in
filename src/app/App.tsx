@@ -40,13 +40,14 @@ const AppContent = () => (
           <Navbar />
           <main className="flex-1">
             <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/blogs" element={<Blogs />} />
-                <Route path="/events" element={<Events />} />
-                <Route path="/team" element={<Team />} />
-                <Route path="/recruitments" element={<Recruitment />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="*" element={<NotFound />} />
+              <Route path="/" element={<Index />} />
+              <Route path="/blogs" element={<Blogs />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/team" element={<Team />} />
+              {/* <Route path="/upis" element={<Upis />} /> */}
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/recruitment" element={<Recruitment />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <Footer />
