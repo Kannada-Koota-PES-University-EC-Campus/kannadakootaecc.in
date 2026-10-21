@@ -13,7 +13,6 @@ import Contact from "@/features/contact/pages/ContactPage";
 import NotFound from "@/app/pages/NotFoundPage";
 import Navbar from "@/shared/components/layout/Navbar";
 import Footer from "@/shared/components/layout/Footer";
-import Recruitment from "@/features/Recruitment/Recruitment";
 
 // Create a query client instance
 const queryClient = new QueryClient();
@@ -46,7 +45,6 @@ const AppContent = () => (
               <Route path="/team" element={<Team />} />
               {/* <Route path="/upis" element={<Upis />} /> */}
               <Route path="/contact" element={<Contact />} />
-              <Route path="/recruitment" element={<Recruitment />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
