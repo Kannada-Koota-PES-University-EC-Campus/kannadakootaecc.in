@@ -21,16 +21,53 @@ export default function Contact() {
 
     // Basic client-side validation
     if (!formData.name.trim() || !formData.email.trim() || !formData.subject.trim() || !formData.message.trim()) {
-      toast({ title: 'Please fill all fields', description: 'All fields are required.' });
+      toast({
+        title: 'Please fill all fields',
+        description: 'All fields are required.',
+        variant: 'destructive',
+      });
       return;
     }
 
     setIsSubmitting(true);
-    const subject = encodeURIComponent(`[Website] ${formData.subject.trim()}`);
-    const body = encodeURIComponent(`Name: ${formData.name.trim()}\nReply to: ${formData.email.trim()}\n\n${formData.message.trim()}`);
-    window.location.href = `mailto:kannadakoota.ecc@pes.edu?subject=${subject}&body=${body}`;
-    toast({ title: 'Your email app is opening', description: 'Review your message there, then send it to Kannada Koota.' });
-    setIsSubmitting(false);
+
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to send your message. Please try again.');
+      }
+
+      toast({
+        title: 'Message sent successfully! ಧನ್ಯವಾದಗಳು',
+        description: data.sandboxFallback
+          ? `Your message has been delivered to ${data.recipient} (Resend test sandbox mode).`
+          : 'Thank you for reaching out! Our team has received your message at it.team.kannadakootaecc@gmail.com.',
+      });
+
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error sending message',
+        description: error.message || 'Something went wrong. Please try again later.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -123,7 +160,7 @@ export default function Contact() {
                   ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
-                      Send Message
+                      Say Hello · Send Message
                     </>
                   )}
                 </Button>
@@ -139,7 +176,10 @@ export default function Contact() {
                     <Mail className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="font-semibold text-foreground">Email</h3>
-                      <p className="text-muted-foreground">kannadakoota.ecc@pes.edu</p>
+                      <p className="text-muted-foreground">
+                        <a href="mailto:it.team.kannadakootaecc@gmail.com" className="hover:underline">it.team.kannadakootaecc@gmail.com</a>
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">kannadakoota.ecc@pes.edu</p>
                     </div>
                   </div>
                   

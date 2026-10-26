@@ -1,10 +1,15 @@
-﻿{
+{
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "kkc-ec-pesu",
+  "name": "vikas-dev-kkc-ec-pesu",
+  "main": "./src/worker.ts",
   "compatibility_date": "2026-09-29",
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application"
+  },
+  "vars": {
+    "CONTACT_EMAIL_RECIPIENT": "it.team.kannadakootaecc@gmail.com",
+    "RESEND_FROM": "onboarding@resend.dev"
   },
   "previews": {}
 }
