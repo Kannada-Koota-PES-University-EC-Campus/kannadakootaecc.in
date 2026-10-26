@@ -1,37 +1,32 @@
-/* Individual portrait placeholders */
+function MemberPortrait({
+  member,
+  className = '',
+}: {
+  member: Member;
+  className?: string;
+}) {
+  const [imageFailed, setImageFailed] = useState(false);
 
-.kk-photo-placeholder {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  min-height: 180px;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 14px;
-  overflow: hidden;
-  border: 1px solid hsl(var(--primary) / 0.2);
-  background:
-    radial-gradient(
-      circle at center,
-      hsl(var(--primary) / 0.15),
-      transparent 70%
-    ),
-    hsl(var(--background) / 0.8);
-  color: var(--primary);
-}
+  if (imageFailed || !member.photo) {
+    return (
+      <div
+        className={`kk-photo-placeholder ${className}`}
+        role="img"
+        aria-label={`Photo placeholder for ${member.name}`}
+      >
+        <Users size={42} strokeWidth={1} />
+        <span>PHOTO COMING SOON</span>
+      </div>
+    );
+  }
 
-.kk-photo-placeholder span {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-align: center;
-}
-
-.kk-leader-image-frame .kk-photo-placeholder {
-  min-height: 100%;
-}
-
-.kk-domain-image-wrap .kk-photo-placeholder {
-  min-height: 100%;
+  return (
+    <img
+      src={member.photo}
+      alt={`${member.name} — ${member.role}`}
+      className={`kk-member-photo ${className}`}
+      loading="lazy"
+      onError={() => setImageFailed(true)}
+    />
+  );
 }
