@@ -1,130 +1,437 @@
 import { useState } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Link } from 'react-router-dom';
-import TeamCard from '@/features/team/components/TeamCard';
 import {
   getAllYears,
   getClubHeads,
   getDomainHeads,
-  Member
+  Member,
 } from '@/features/team/data/team';
-import { Users, Crown, Star } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Crown,
+  Github,
+  Instagram,
+  Linkedin,
+  Sparkles,
+  Users,
+} from 'lucide-react';
+import './TeamPage.css';
+
+function SocialLinks({ member }: { member: Member }) {
+  const links = [
+    { url: member.linkedin, label: 'LinkedIn', Icon: Linkedin },
+    { url: member.instagram, label: 'Instagram', Icon: Instagram },
+    { url: member.github, label: 'GitHub', Icon: Github },
+  ].filter((link) => link.url);
+
+  if (!links.length) return null;
+
+  return (
+    <div className="kk-socials">
+      {links.map(({ url, label, Icon }) => (
+        <a
+          key={label}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${member.name} on ${label}`}
+          className="kk-social-link"
+        >
+          <Icon size={17} />
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function MemberPortrait({
+  member,
+  className = '',
+}: {
+  member: Member;
+  className?: string;
+}) {
+  return (
+    <img
+      src={member.photo}
+      alt={`${member.name} — ${member.role}`}
+      className={`kk-member-photo ${className}`}
+      loading="lazy"
+      onError={(event) => {
+        event.currentTarget.style.visibility = 'hidden';
+      }}
+    />
+  );
+}
 
 export default function Team() {
   const allYears = getAllYears();
-  const [selectedYear, setSelectedYear] = useState(allYears[0] || new Date().getFullYear());
+
+  const [selectedYear, setSelectedYear] = useState(
+    allYears[0] || new Date().getFullYear()
+  );
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
 
   const clubHeads = getClubHeads(selectedYear);
   const domainHeads = getDomainHeads(selectedYear);
 
-  const renderSection = (title: string, members: Member[], icon: React.ReactNode) => {
-    if (members.length === 0) return null;
+  const activeMember = clubHeads[activeIndex];
 
-    return (
-      <div className="mb-16">
-        <div className="flex items-center justify-center mb-8 space-x-3">
-          {icon}
-          <h2 className="text-3xl font-bold text-foreground text-center">
-            {title}
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 animate-fade-in-up">
-          {members.map((member) => (
-            <TeamCard key={member.id} member={member} />
-          ))}
-        </div>
-      </div>
+  const changeYear = (year: number) => {
+    setSelectedYear(year);
+    setActiveIndex(0);
+  };
+
+  const changeMember = (direction: number) => {
+    if (!clubHeads.length) return;
+
+    setActiveIndex(
+      (current) =>
+        (current + direction + clubHeads.length) % clubHeads.length
     );
   };
 
+  const handleTouchEnd = (endX: number) => {
+    if (touchStart === null) return;
+
+    const difference = endX - touchStart;
+
+    if (Math.abs(difference) > 50) {
+      changeMember(difference < 0 ? 1 : -1);
+    }
+
+    setTouchStart(null);
+  };
+
   return (
-    <div className="koota-subpage koota-team min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-surface via-background to-primary-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="space-y-6 animate-fade-in-up">
-            <div className="flex items-center justify-center space-x-2 text-primary">
-              <Users className="h-8 w-8" />
-              <h1 className="text-4xl md:text-6xl font-bold">
-                ನಮ್ಮ ತಂಡ
-              </h1>
-            </div>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Meet the dedicated individuals who drive our community forward.
-            </p>
-            <p className="text-base text-muted-foreground kannada-text">
-              ಕನ್ನಡ ಕೂಟದ ಹಿಂದಿರುವ ಶಕ್ತಿ ನಮ್ಮ ತಂಡ
-            </p>
+    <main className="koota-team-page">
+      {/* HERO */}
+      <section className="kk-hero">
+        <div className="kk-hero-decoration kk-decoration-one" />
+        <div className="kk-hero-decoration kk-decoration-two" />
+
+        <div className="kk-hero-inner">
+          <div className="kk-eyebrow">
+            <span className="kk-eyebrow-line" />
+            THE PEOPLE OF KANNADA KOOTA
+            <span className="kk-eyebrow-line" />
           </div>
-        </div>
-      </section>
 
-      {/* Year Filter Section */}
-      <section className="py-8 bg-surface border-b border-border sticky top-0 z-10 backdrop-blur-sm bg-surface/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <div className="flex items-center space-x-2">
-              <span className="text-muted-foreground">Batch of:</span>
-            </div>
-            <div className="flex flex-wrap justify-center space-x-2">
-              {allYears.map((year) => (
-                <Button
-                  key={year}
-                  variant={selectedYear === year ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSelectedYear(year)}
-                >
-                  {year}
-                </Button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+          <h1 className="kk-hero-title">
+            ನಮ್ಮ <span>ತಂಡ</span>
+          </h1>
 
-      {/* Team Grid */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {renderSection(
-            'Club Heads',
-            clubHeads,
-            <Crown className="h-8 w-8 text-yellow-500" />
-          )}
-
-          {renderSection(
-            'Domain Heads',
-            domainHeads,
-            <Star className="h-8 w-8 text-blue-500" />
-          )}
-
-          {clubHeads.length === 0 && domainHeads.length === 0 && (
-             <div className="text-center py-12">
-             <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-             <h3 className="text-xl font-semibold text-foreground mb-2">
-               No members found for {selectedYear}
-             </h3>
-             <p className="text-muted-foreground">
-               Please select another year or check back later.
-             </p>
-           </div>
-          )}
-        </div>
-      </section>
-
-       {/* CTA Section */}
-       <section className="py-16 bg-primary-muted">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-4">
-            Interested in Joining Our Team?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            We are always looking for passionate individuals to contribute to our mission.
+          <p className="kk-hero-subtitle">
+            The people behind our roots.
           </p>
-          <Button className="btn-hero" size="lg" asChild>
-            <Link to="/contact">Contact Us</Link>
+
+          <p className="kk-hero-description">
+            Every celebration has a story. Every story has people.
+            Meet the passionate minds bringing Kannada culture to life
+            at PES University, Electronic City Campus.
+          </p>
+
+          <a href="#kk-leadership" className="kk-explore-link">
+            MEET THE PEOPLE
+            <ArrowRight size={17} />
+          </a>
+
+          {/* Whole-team photograph placeholder */}
+          <div className="kk-group-photo">
+            <div className="kk-group-photo-pattern" />
+
+            <div className="kk-group-photo-content">
+              <div className="kk-group-icon">
+                <Users size={34} strokeWidth={1.3} />
+              </div>
+
+              <span className="kk-group-kannada">
+                ಒಂದೇ ಕುಟುಂಬ
+              </span>
+
+              <span className="kk-group-english">
+                ONE COMMUNITY. MANY STORIES.
+              </span>
+
+              <span className="kk-group-hint">
+                YOUR TEAM PHOTOGRAPH GOES HERE
+              </span>
+            </div>
+
+            <span className="kk-photo-index">KKC / ECC</span>
+          </div>
+
+          <div className="kk-hero-bottom">
+            <span>ROOTED IN CULTURE</span>
+            <span className="kk-bottom-dot">✳</span>
+            <span>UNITED BY LANGUAGE</span>
+            <span className="kk-bottom-dot">✳</span>
+            <span>DRIVEN BY PEOPLE</span>
+          </div>
+        </div>
+      </section>
+
+      {/* YEAR SELECTOR */}
+      <section className="kk-year-bar" aria-label="Select team year">
+        <div className="kk-year-inner">
+          <div className="kk-year-label">
+            <span>EXPLORE OUR TEAM</span>
+            <strong>Every year, a new chapter.</strong>
+          </div>
+
+          <div className="kk-year-options">
+            {allYears.map((year) => (
+              <button
+                key={year}
+                type="button"
+                onClick={() => changeYear(year)}
+                className={`kk-year-button ${
+                  selectedYear === year ? 'active' : ''
+                }`}
+                aria-pressed={selectedYear === year}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CLUB HEADS / CORE TEAM */}
+      <section id="kk-leadership" className="kk-leadership">
+        <div className="kk-section-heading">
+          <div className="kk-section-kicker">
+            <Crown size={15} />
+            THE HEART OF THE COMMUNITY
+          </div>
+
+          <h2>
+            The people who <span>lead.</span>
+          </h2>
+
+          <p>
+            Different perspectives. One shared purpose.
+            Meet the people steering our journey.
+          </p>
+        </div>
+
+        {activeMember ? (
+          <div className="kk-leader-showcase">
+            <div
+              className="kk-leader-visual"
+              onTouchStart={(event) =>
+                setTouchStart(event.touches[0].clientX)
+              }
+              onTouchEnd={(event) =>
+                handleTouchEnd(event.changedTouches[0].clientX)
+              }
+            >
+              <div className="kk-leader-visual-top">
+                <span>KKC / {selectedYear}</span>
+                <span>
+                  {String(activeIndex + 1).padStart(2, '0')} —{' '}
+                  {String(clubHeads.length).padStart(2, '0')}
+                </span>
+              </div>
+
+              <div className="kk-leader-image-frame" key={activeMember.id}>
+                <MemberPortrait
+                  member={activeMember}
+                  className="kk-leader-image"
+                />
+
+                <div className="kk-leader-image-caption">
+                  <Sparkles size={16} />
+                  <span>THE PEOPLE MAKE THE CULTURE</span>
+                </div>
+              </div>
+
+              <div className="kk-leader-visual-bottom">
+                <span>ನಮ್ಮ ಹೆಮ್ಮೆ</span>
+                <span>OUR PRIDE</span>
+              </div>
+            </div>
+
+            <div className="kk-leader-details" key={activeMember.id}>
+              <span className="kk-member-number">
+                MEMBER NO. {String(activeIndex + 1).padStart(2, '0')}
+              </span>
+
+              <h3>{activeMember.name}</h3>
+
+              <span className="kk-role-label">
+                {activeMember.role}
+              </span>
+
+              {activeMember.bio && (
+                <p className="kk-leader-bio">{activeMember.bio}</p>
+              )}
+
+              <p className="kk-leader-quote">
+                “Culture lives on through the people who carry it forward.”
+              </p>
+
+              <SocialLinks member={activeMember} />
+
+              <div className="kk-leader-navigation">
+                <div className="kk-leader-dots">
+                  {clubHeads.map((member, index) => (
+                    <button
+                      key={member.id}
+                      type="button"
+                      onClick={() => setActiveIndex(index)}
+                      className={`kk-leader-dot ${
+                        activeIndex === index ? 'active' : ''
+                      }`}
+                      aria-label={`View ${member.name}`}
+                      aria-pressed={activeIndex === index}
+                    />
+                  ))}
+                </div>
+
+                <div className="kk-arrow-buttons">
+                  <button
+                    type="button"
+                    onClick={() => changeMember(-1)}
+                    className="kk-arrow-button"
+                    aria-label="Previous team leader"
+                  >
+                    <ArrowLeft size={19} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => changeMember(1)}
+                    className="kk-arrow-button kk-arrow-next"
+                    aria-label="Next team leader"
+                  >
+                    <ArrowRight size={19} />
+                  </button>
+                </div>
+              </div>
+
+              <span className="kk-swipe-hint">
+                SWIPE OR USE THE ARROWS TO EXPLORE
+              </span>
+            </div>
+          </div>
+        ) : (
+          <p className="kk-empty-state">
+            No leadership details are available for {selectedYear}.
+          </p>
+        )}
+      </section>
+
+      {/* DOMAIN HEADS */}
+      <section className="kk-domains">
+        <div className="kk-domains-heading">
+          <div>
+            <div className="kk-section-kicker">
+              <Sparkles size={15} />
+              THE MINDS BEHIND THE MAGIC
+            </div>
+
+            <h2>
+              Many talents. <span>One team.</span>
+            </h2>
+
+            <p>
+              From planning and design to culture and communication,
+              every contribution makes a difference.
+            </p>
+          </div>
+
+          <div className="kk-domain-count">
+            <strong>{String(domainHeads.length).padStart(2, '0')}</strong>
+            <span>DOMAIN HEADS</span>
+          </div>
+        </div>
+
+        {domainHeads.length > 0 ? (
+          <div className="kk-domain-grid">
+            {domainHeads.map((member, index) => (
+              <article className="kk-domain-member" key={member.id}>
+                <div className="kk-domain-image-wrap">
+                  <MemberPortrait
+                    member={member}
+                    className="kk-domain-image"
+                  />
+
+                  <span className="kk-domain-index">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+
+                  <div className="kk-domain-image-overlay" />
+                </div>
+
+                <div className="kk-domain-info">
+                  <span className="kk-domain-role">
+                    DOMAIN HEAD
+                  </span>
+
+                  <h3>{member.name}</h3>
+
+                  {member.domain && (
+                    <p className="kk-domain-name">{member.domain}</p>
+                  )}
+
+                  {member.bio && (
+                    <p className="kk-domain-bio">{member.bio}</p>
+                  )}
+
+                  <div className="kk-domain-footer">
+                    <SocialLinks member={member} />
+
+                    <span className="kk-domain-arrow">
+                      <ArrowUpRight size={18} />
+                    </span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="kk-empty-state">
+            No domain heads are available for {selectedYear}.
+          </p>
+        )}
+      </section>
+
+      {/* CLOSING SECTION */}
+      <section className="kk-closing">
+        <div className="kk-closing-pattern" />
+
+        <div className="kk-closing-content">
+          <span className="kk-closing-kicker">
+            THIS IS OUR STORY
+          </span>
+
+          <h2>
+            ಕನ್ನಡ ನಮ್ಮ ಹೆಮ್ಮೆ.
+            <br />
+            <span>ನಮ್ಮ ಜನ ನಮ್ಮ ಶಕ್ತಿ.</span>
+          </h2>
+
+          <p>
+            Our language connects us. Our people move us forward.
+            Come be a part of the journey.
+          </p>
+
+          <Button className="kk-join-button" size="lg" asChild>
+            <Link to="/contact">
+              Be Part of Our Story
+              <ArrowUpRight size={18} />
+            </Link>
           </Button>
         </div>
+
+        <span className="kk-closing-mark">ಕನ್ನಡ ಕೂಟ</span>
       </section>
-    </div>
+    </main>
   );
 }
