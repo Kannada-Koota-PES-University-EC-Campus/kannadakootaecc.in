@@ -6,8 +6,9 @@ import type { Stop } from "@/features/karunadu3d/data/journey";
 /* Real Karnataka in 3D
  * - terrain.bin: elevation on a 400 x 624 grid (AWS Terrain Tiles), 1 byte
  *   per cell: 0 = outside the state, 1..255 = height in 8 m steps
- * - satellite.jpg: cloud-free Sentinel-2 true-colour mosaic (Jan 2024,
- *   contains modified Copernicus Sentinel data), same extent as the map */
+ * - satellite-8k.jpg / satellite.jpg: cloud-free Sentinel-2 true-colour mosaic
+ *   (dry season 2024, contains modified Copernicus Sentinel data), same extent
+ *   as the map; 8192 px tall for desktops, 4096 px for phones and weaker GPUs */
 
 const VERTICAL = 0.02; // map units per metre (relief exaggerated so the Ghats read clearly)
 
@@ -146,19 +147,22 @@ export interface KarnatakaScene {
 }
 
 export async function createScene(canvas: HTMLCanvasElement, stops: Stop[]): Promise<KarnatakaScene> {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+  // the sharp 8K map only where the GPU can hold it; phones get the 4K one (an 8K texture is ~230 MB of GPU memory)
+  const phone = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+  const big = !phone && renderer.capabilities.maxTextureSize >= 8192;
   const [terrain, satellite] = await Promise.all([
     loadTerrain(),
-    new THREE.TextureLoader().loadAsync("/karnataka/satellite.jpg"),
+    new THREE.TextureLoader().loadAsync(big ? "/karnataka/satellite-8k.jpg" : "/karnataka/satellite.jpg"),
   ]);
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.35;
 
   satellite.colorSpace = THREE.SRGBColorSpace;
-  satellite.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+  satellite.anisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
 
   const scene = new THREE.Scene();
   const sky = skyTexture();
@@ -310,12 +314,12 @@ export async function createScene(canvas: HTMLCanvasElement, stops: Stop[]): Pro
     const home = i === stops.length - 1;
     const base = new THREE.Mesh(
       new THREE.SphereGeometry(home ? 2.6 : 1.9, 20, 14),
-      new THREE.MeshBasicMaterial({ color: home ? "#e63a3f" : "#ffcc33" })
+      new THREE.MeshBasicMaterial({ color: home ? "#ffe08a" : "#ffcc33" })
     );
     base.position.copy(v).setY(v.y + 1.8);
     const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 70, 8, 1, true), pillarMat);
     pillar.position.copy(v).setY(v.y + 37);
-    const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: home ? "#ff6b6b" : "#ffd56a", transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+    const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: "#ffd56a", transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
     halo.position.copy(v).setY(v.y + 2);
     halo.scale.setScalar(16);
     scene.add(base, pillar, halo);

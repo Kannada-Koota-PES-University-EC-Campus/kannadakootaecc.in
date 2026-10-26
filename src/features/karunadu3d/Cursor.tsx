@@ -60,7 +60,7 @@ function CursorIcon({ mode }: { mode: CursorMode }) {
       );
     case "compass":
       return (
-        <svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="none" stroke="#f6dc8c" strokeWidth="1.6" /><path d="M16 5l3 11-3 11-3-11z" fill="#d6262b" /><path d="M16 16l3 0-3 11-3-11z" fill="#fbf3e2" /></svg>
+        <svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="none" stroke="#f6dc8c" strokeWidth="1.6" /><path d="M16 5l3 11-3 11-3-11z" fill="#f2c14e" /><path d="M16 16l3 0-3 11-3-11z" fill="#fbf3e2" /></svg>
       );
     default:
       // ಮಲ್ಲಿಗೆ – Mysuru jasmine
@@ -149,7 +149,7 @@ export default function Cursor({ onActive, showIcon = true }: { onActive: (on: b
             particles.push({ ...base, kind: "square", color: "rgba(247,236,208,0.8)", size: rand(3, 5), max: 35 });
             break;
           case "compass":
-            particles.push({ ...base, kind: "dot", color: "#d6262b", vx: 0, vy: 0, size: 2, max: 30 });
+            particles.push({ ...base, kind: "dot", color: "#f6dc8c", vx: 0, vy: 0, size: 2, max: 30 });
             break;
         }
       }
