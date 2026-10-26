@@ -35,6 +35,6 @@ export default function Navbar() {
       <Link to="/contact" className="nav-join">Say hello <ArrowUpRight size={15} /></Link>
       <button className="mobile-menu-toggle" onClick={() => setIsOpen(!isOpen)} aria-expanded={isOpen} aria-label="Toggle navigation">{isOpen ? <X /> : <Menu />}</button>
     </div>
-    {isOpen && <div className="mobile-nav">{navItems.map(item => <Link key={item.name} to={item.path} onClick={item.name === "Our story" ? handleOurStory : () => handlePageNav(item.path)}>{item.name}</Link>)}<Link to="/recruitment" onClick={() => handlePageNav("/recruitment")}>Join the Koota <ArrowUpRight size={16} /></Link><Link to="/contact" onClick={() => handlePageNav("/contact")}>Contact us</Link></div>}
+    {isOpen && <div className="mobile-nav">{navItems.map(item => <Link key={item.name} to={item.path} onClick={item.name === "Our story" ? handleOurStory : () => handlePageNav(item.path)}>{item.name}</Link>)}<Link to="/contact" onClick={() => handlePageNav("/contact")}>Contact us</Link></div>}
   </nav>;
 }
