@@ -2,7 +2,7 @@ import { processSendEmail } from './features/contact/services/sendEmail';
 
 export interface Env {
   ASSETS: {
-    fetch: (request: Request) => Promise<Response>;
+    fetch: (request: Request | string) => Promise<Response>;
   };
   RESEND_API_KEY?: string;
   CONTACT_EMAIL_RECIPIENT?: string;
@@ -64,6 +64,12 @@ export default {
       }
     }
 
-    return env.ASSETS.fetch(request);
+    const response = await env.ASSETS.fetch(request);
+    if (response.status === 404) {
+      const spaUrl = new URL(request.url);
+      spaUrl.pathname = '/index.html';
+      return await env.ASSETS.fetch(new Request(spaUrl.toString(), request));
+    }
+    return response;
   },
 };
