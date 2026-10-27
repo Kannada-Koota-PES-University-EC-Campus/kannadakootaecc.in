@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -80,6 +81,37 @@ function MemberPortrait({
   );
 }
 
+function LeaderProfile({
+  member,
+  number,
+}: {
+  member: Member;
+  number: string;
+}) {
+  return (
+    <article className="kk-leader-pair-profile">
+      <div className="kk-leader-pair-photo">
+        <MemberPortrait
+          member={member}
+          className="kk-leader-pair-image"
+        />
+        <span className="kk-leader-pair-number">{number}</span>
+      </div>
+
+      <div className="kk-leader-pair-info">
+        <span className="kk-role-label">{member.role}</span>
+        <h3>{member.name}</h3>
+
+        {member.bio && (
+          <p className="kk-leader-bio">{member.bio}</p>
+        )}
+
+        <SocialLinks member={member} />
+      </div>
+    </article>
+  );
+}
+
 export default function Team() {
   const allYears = getAllYears();
 
@@ -87,37 +119,61 @@ export default function Team() {
     allYears[0] || new Date().getFullYear()
   );
 
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [domainIndex, setDomainIndex] = useState(0);
+  const [domainTouchStart, setDomainTouchStart] = useState<number | null>(
+    null
+  );
 
   const clubHeads = getClubHeads(selectedYear);
   const domainHeads = getDomainHeads(selectedYear);
-  const activeMember = clubHeads[activeIndex];
+
+  // Identify Head and Vice Head from their role labels.
+  const viceHead = clubHeads.find((member) =>
+    /\bvice\s*head\b/i.test(member.role)
+  );
+
+  const head = clubHeads.find(
+    (member) =>
+      /\bhead\b/i.test(member.role) &&
+      !/\bvice\s*head\b/i.test(member.role)
+  );
+
+  // If role labels differ, use the first two members as a fallback.
+  const displayedLeaders =
+    head || viceHead
+      ? [head, viceHead].filter(
+          (member): member is Member => Boolean(member)
+        )
+      : clubHeads.slice(0, 2);
 
   const changeYear = (year: number) => {
     setSelectedYear(year);
-    setActiveIndex(0);
+    setDomainIndex(0);
   };
 
-  const changeMember = (direction: number) => {
-    if (!clubHeads.length) return;
+  const moveDomains = (direction: number) => {
+    if (!domainHeads.length) return;
 
-    setActiveIndex(
-      (current) =>
-        (current + direction + clubHeads.length) % clubHeads.length
-    );
+    setDomainIndex((current) => {
+      const next = current + direction;
+
+      if (next < 0) return domainHeads.length - 1;
+      if (next >= domainHeads.length) return 0;
+
+      return next;
+    });
   };
 
-  const handleTouchEnd = (endX: number) => {
-    if (touchStart === null) return;
+  const handleDomainTouchEnd = (endX: number) => {
+    if (domainTouchStart === null) return;
 
-    const difference = endX - touchStart;
+    const difference = endX - domainTouchStart;
 
     if (Math.abs(difference) > 50) {
-      changeMember(difference < 0 ? 1 : -1);
+      moveDomains(difference < 0 ? 1 : -1);
     }
 
-    setTouchStart(null);
+    setDomainTouchStart(null);
   };
 
   return (
@@ -153,7 +209,6 @@ export default function Team() {
             <ArrowRight size={17} />
           </a>
 
-          {/* GROUP PHOTOGRAPH */}
           <div className="kk-group-photo">
             <img
               src="/kannada-koota-team.jpg"
@@ -210,7 +265,7 @@ export default function Team() {
         </div>
       </section>
 
-      {/* CORE TEAM / CLUB HEADS */}
+      {/* HEAD AND VICE HEAD — DISPLAYED TOGETHER */}
       <section id="kk-leadership" className="kk-leadership">
         <div className="kk-section-heading">
           <div className="kk-section-kicker">
@@ -228,105 +283,15 @@ export default function Team() {
           </p>
         </div>
 
-        {activeMember ? (
-          <div className="kk-leader-showcase">
-            <div
-              className="kk-leader-visual"
-              onTouchStart={(event) =>
-                setTouchStart(event.touches[0].clientX)
-              }
-              onTouchEnd={(event) =>
-                handleTouchEnd(event.changedTouches[0].clientX)
-              }
-            >
-              <div className="kk-leader-visual-top">
-                <span>KKC / {selectedYear}</span>
-                <span>
-                  {String(activeIndex + 1).padStart(2, '0')} —{' '}
-                  {String(clubHeads.length).padStart(2, '0')}
-                </span>
-              </div>
-
-              <div className="kk-leader-image-frame" key={activeMember.id}>
-                <MemberPortrait
-                  member={activeMember}
-                  className="kk-leader-image"
-                />
-
-                <div className="kk-leader-image-caption">
-                  <Sparkles size={16} />
-                  <span>THE PEOPLE MAKE THE CULTURE</span>
-                </div>
-              </div>
-
-              <div className="kk-leader-visual-bottom">
-                <span>ನಮ್ಮ ಹೆಮ್ಮೆ</span>
-                <span>OUR PRIDE</span>
-              </div>
-            </div>
-
-            <div className="kk-leader-details" key={activeMember.id}>
-              <span className="kk-member-number">
-                MEMBER NO. {String(activeIndex + 1).padStart(2, '0')}
-              </span>
-
-              <h3>{activeMember.name}</h3>
-
-              <span className="kk-role-label">
-                {activeMember.role}
-              </span>
-
-              {activeMember.bio && (
-                <p className="kk-leader-bio">{activeMember.bio}</p>
-              )}
-
-              <p className="kk-leader-quote">
-                “Culture lives on through the people who carry it forward.”
-              </p>
-
-              <SocialLinks member={activeMember} />
-
-              <div className="kk-leader-navigation">
-                <div className="kk-leader-dots">
-                  {clubHeads.map((member, index) => (
-                    <button
-                      key={member.id}
-                      type="button"
-                      onClick={() => setActiveIndex(index)}
-                      className={`kk-leader-dot ${
-                        activeIndex === index ? 'active' : ''
-                      }`}
-                      aria-label={`View ${member.name}`}
-                      aria-pressed={activeIndex === index}
-                    />
-                  ))}
-                </div>
-
-                <div className="kk-arrow-buttons">
-                  <button
-                    type="button"
-                    onClick={() => changeMember(-1)}
-                    className="kk-arrow-button"
-                    aria-label="Previous team leader"
-                  >
-                    <ArrowLeft size={19} />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => changeMember(1)}
-                    className="kk-arrow-button kk-arrow-next"
-                    aria-label="Next team leader"
-                  >
-                    <ArrowRight size={19} />
-                  </button>
-                </div>
-              </div>
-
-              <span className="kk-swipe-hint">
-                SWIPE OR USE THE ARROWS TO EXPLORE
-              </span>
-            </div>
+        {displayedLeaders.length > 0 ? (
+          <div className="kk-leader-pair">
+            {displayedLeaders.map((member, index) => (
+              <LeaderProfile
+                key={member.id}
+                member={member}
+                number={String(index + 1).padStart(2, '0')}
+              />
+            ))}
           </div>
         ) : (
           <p className="kk-empty-state">
@@ -335,7 +300,7 @@ export default function Team() {
         )}
       </section>
 
-      {/* DOMAIN HEADS — COMPACT GRID */}
+      {/* DOMAIN HEADS — MOVABLE GALLERY */}
       <section className="kk-domains" id="kk-domains">
         <div className="kk-domains-heading">
           <div>
@@ -362,32 +327,81 @@ export default function Team() {
         </div>
 
         {domainHeads.length > 0 ? (
-          <div className="kk-domain-compact-grid">
-            {domainHeads.map((member, index) => (
-              <article className="kk-domain-person" key={member.id}>
-                <div className="kk-domain-person-photo">
-                  <MemberPortrait
-                    member={member}
-                    className="kk-domain-person-image"
-                  />
+          <>
+            <div
+              className="kk-domain-gallery"
+              onTouchStart={(event) =>
+                setDomainTouchStart(event.touches[0].clientX)
+              }
+              onTouchEnd={(event) =>
+                handleDomainTouchEnd(event.changedTouches[0].clientX)
+              }
+            >
+              <div className="kk-domain-gallery-track">
+                {domainHeads.map((member, index) => (
+                  <article
+                    className={`kk-domain-person ${
+                      index === domainIndex ? 'is-current' : ''
+                    }`}
+                    key={member.id}
+                  >
+                    <div className="kk-domain-person-photo">
+                      <MemberPortrait
+                        member={member}
+                        className="kk-domain-person-image"
+                      />
 
-                  <span className="kk-domain-person-number">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                </div>
+                      <span className="kk-domain-person-number">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                    </div>
 
-                <div className="kk-domain-person-info">
-                  <span className="kk-domain-person-role">
-                    {member.domain || member.role}
-                  </span>
+                    <div className="kk-domain-person-info">
+                      <span className="kk-domain-person-role">
+                        {member.domain || member.role}
+                      </span>
 
-                  <h3>{member.name}</h3>
+                      <h3>{member.name}</h3>
 
-                  <SocialLinks member={member} />
-                </div>
-              </article>
-            ))}
-          </div>
+                      <SocialLinks member={member} />
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="kk-domain-navigation">
+              <span className="kk-domain-swipe-hint">
+                SWIPE OR USE THE ARROWS TO EXPLORE
+              </span>
+
+              <div className="kk-domain-navigation-right">
+                <span className="kk-domain-position">
+                  {String(domainIndex + 1).padStart(2, '0')}
+                  <span> / </span>
+                  {String(domainHeads.length).padStart(2, '0')}
+                </span>
+
+                <button
+                  type="button"
+                  className="kk-domain-arrow"
+                  onClick={() => moveDomains(-1)}
+                  aria-label="Previous domain head"
+                >
+                  <ArrowLeft size={19} />
+                </button>
+
+                <button
+                  type="button"
+                  className="kk-domain-arrow"
+                  onClick={() => moveDomains(1)}
+                  aria-label="Next domain head"
+                >
+                  <ArrowRight size={19} />
+                </button>
+              </div>
+            </div>
+          </>
         ) : (
           <p className="kk-empty-state">
             No domain heads are available for {selectedYear}.
