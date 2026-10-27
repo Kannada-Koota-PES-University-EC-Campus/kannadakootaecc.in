@@ -163,18 +163,15 @@ export default function Team() {
               className="kk-group-photo-image"
               loading="lazy"
             />
-
             <div className="kk-group-photo-overlay" />
-
             <div className="kk-group-photo-content">
-              <span className="kk-group-kannada">
-                ಒಂದೇ ಕುಟುಂಬ
-              </span>
-
+              <span className="kk-group-kannada">ಒಂದೇ ಕುಟುಂಬ</span>
               <span className="kk-group-english">
                 ONE COMMUNITY. MANY STORIES.
               </span>
             </div>
+            <span className="kk-photo-index">KKC / ECC</span>
+          </div>
 
             <span className="kk-photo-index">KKC / ECC</span>
           </div>
