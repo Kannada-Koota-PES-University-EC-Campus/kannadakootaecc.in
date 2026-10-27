@@ -1918,3 +1918,275 @@
     gap: 30px 14px;
   }
 }
+
+
+/* =========================================
+   HEAD + VICE HEAD — SIDE-BY-SIDE EDITORIAL
+   ========================================= */
+
+.kk-leader-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(24px, 5vw, 64px);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.kk-leader-pair-profile {
+  min-width: 0;
+  background: transparent;
+}
+
+.kk-leader-pair-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #e8e0d2;
+}
+
+.kk-leader-pair-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 450ms ease;
+}
+
+.kk-leader-pair-profile:hover .kk-leader-pair-image {
+  transform: scale(1.035);
+}
+
+.kk-leader-pair-number {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #d7b66a;
+  color: #171510;
+  font-size: 11px;
+}
+
+.kk-leader-pair-info {
+  padding-top: 18px;
+}
+
+.kk-leader-pair-info h3 {
+  margin: 8px 0;
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 500;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   DOMAIN HEADS — HORIZONTAL MOVABLE GALLERY
+   ========================================= */
+
+.kk-domain-gallery {
+  width: 100%;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.kk-domain-gallery-track {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* Show a single movable profile at a time.
+   This avoids oversized stacked profiles. */
+.kk-domain-gallery-track .kk-domain-person {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+/* Portrait size */
+.kk-domain-gallery-track .kk-domain-person-photo {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  aspect-ratio: 4 / 5;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #e8e0d2;
+}
+
+.kk-domain-gallery-track .kk-domain-person-photo img,
+.kk-domain-gallery-track .kk-domain-person-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 450ms ease;
+}
+
+.kk-domain-gallery-track .kk-domain-person:hover
+.kk-domain-person-photo img {
+  transform: scale(1.035);
+}
+
+.kk-domain-gallery-track .kk-domain-person-number {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #d7b66a;
+  color: #171510;
+  font-size: 11px;
+}
+
+.kk-domain-gallery-track .kk-domain-person-info {
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 18px 0 0;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.kk-domain-gallery-track .kk-domain-person-role {
+  display: block;
+  margin-bottom: 8px;
+  color: #b28b45;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.kk-domain-gallery-track .kk-domain-person-info h3 {
+  margin: 0;
+  font-size: clamp(23px, 3vw, 34px);
+  font-weight: 500;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.kk-domain-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(178, 139, 69, 0.35);
+}
+
+.kk-domain-swipe-hint {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.kk-domain-navigation-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kk-domain-position {
+  margin-right: 8px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.kk-domain-position span {
+  opacity: 0.5;
+  padding: 0 3px;
+}
+
+.kk-domain-arrow {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(178, 139, 69, 0.6);
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    background 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease;
+}
+
+.kk-domain-arrow:hover {
+  background: #b28b45;
+  color: #171510;
+  border-color: #b28b45;
+}
+
+.kk-domain-arrow:focus-visible {
+  outline: 2px solid #b28b45;
+  outline-offset: 4px;
+}
+
+@media (max-width: 640px) {
+  .kk-leader-pair {
+    gap: 16px;
+  }
+
+  .kk-leader-pair-info {
+    padding-top: 12px;
+  }
+
+  .kk-leader-pair-info h3 {
+    font-size: 19px;
+  }
+
+  .kk-domain-gallery-track {
+    gap: 16px;
+  }
+
+  .kk-domain-gallery-track .kk-domain-person-photo {
+    max-width: 100%;
+    aspect-ratio: 3 / 4;
+  }
+
+  .kk-domain-navigation {
+    align-items: flex-start;
+  }
+
+  .kk-domain-swipe-hint {
+    max-width: 140px;
+    line-height: 1.6;
+  }
+
+  .kk-domain-navigation-right {
+    gap: 8px;
+  }
+
+  .kk-domain-arrow {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kk-leader-pair-image,
+  .kk-domain-gallery-track,
+  .kk-domain-gallery-track .kk-domain-person-photo img {
+    transition: none;
+  }
+}
