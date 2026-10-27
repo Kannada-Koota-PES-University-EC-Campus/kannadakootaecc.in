@@ -337,12 +337,15 @@ export default function Team() {
                 handleDomainTouchEnd(event.changedTouches[0].clientX)
               }
             >
-              <div
-                className="kk-domain-gallery-track"
-                style={{
-                  transform: `translateX(calc(${domainIndex} * -100% - ${domainIndex} * 24px))`,
-                }}
-              >
+              
+            <div
+              className="kk-domain-gallery-track"
+              style={{
+                transform: `translateX(-${domainIndex * 100}%)`,
+                gap: 0,
+              }}
+            >
+
                 {domainHeads.map((member, index) => (
                   <article
                     className={`kk-domain-person ${
