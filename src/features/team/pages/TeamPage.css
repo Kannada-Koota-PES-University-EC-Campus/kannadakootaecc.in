@@ -1713,3 +1713,58 @@
     font-size: 16px;
   }
 }
+
+/* Compact Domain Heads layout */
+.kk-domain-compact-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.kk-domain-person {
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.kk-domain-person img {
+  display: block;
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.kk-domain-person-info {
+  padding-top: 10px;
+}
+
+.kk-domain-person-info h3 {
+  font-size: 16px;
+  margin: 4px 0;
+}
+
+.kk-domain-person-info p {
+  font-size: 13px;
+  margin: 3px 0;
+}
+
+@media (max-width: 900px) {
+  .kk-domain-compact-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .kk-domain-compact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px;
+  }
+
+  .kk-domain-person img {
+    height: 150px;
+  }
+}
