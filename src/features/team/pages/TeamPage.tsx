@@ -40,7 +40,7 @@ function SocialLinks({ member }: { member: Member }) {
           aria-label={`${member.name} on ${label}`}
           className="kk-social-link"
         >
-          <Icon size={17} />
+          <Icon size={16} />
         </a>
       ))}
     </div>
@@ -63,10 +63,11 @@ function MemberPortrait({
         role="img"
         aria-label={`Photo coming soon for ${member.name}`}
       >
-        <Users size={42} strokeWidth={1} />
+        <Users size={34} strokeWidth={1} />
         <span>PHOTO COMING SOON</span>
       </div>
     );
+  }
 
   return (
     <img
@@ -78,7 +79,6 @@ function MemberPortrait({
     />
   );
 }
-}
 
 export default function Team() {
   const allYears = getAllYears();
@@ -89,17 +89,14 @@ export default function Team() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [activeDomainIndex, setActiveDomainIndex] = useState(0);
 
   const clubHeads = getClubHeads(selectedYear);
   const domainHeads = getDomainHeads(selectedYear);
-
   const activeMember = clubHeads[activeIndex];
 
   const changeYear = (year: number) => {
     setSelectedYear(year);
     setActiveIndex(0);
-    setActiveDomainIndex(0);
   };
 
   const changeMember = (direction: number) => {
@@ -156,7 +153,7 @@ export default function Team() {
             <ArrowRight size={17} />
           </a>
 
-          {/* Core team group photograph */}
+          {/* GROUP PHOTOGRAPH */}
           <div className="kk-group-photo">
             <img
               src="/kannada-koota-team.jpg"
@@ -164,20 +161,15 @@ export default function Team() {
               className="kk-group-photo-image"
               loading="lazy"
             />
+
             <div className="kk-group-photo-overlay" />
+
             <div className="kk-group-photo-content">
               <span className="kk-group-kannada">ಒಂದೇ ಕುಟುಂಬ</span>
               <span className="kk-group-english">
                 ONE COMMUNITY. MANY STORIES.
               </span>
             </div>
-            <span className="kk-photo-index">KKC / ECC</span>
-          </div>
-            <span className="kk-photo-index">KKC / ECC</span>
-          </div>
-
-            <span className="kk-photo-index">KKC / ECC</span>
-          </div>
 
             <span className="kk-photo-index">KKC / ECC</span>
           </div>
@@ -218,7 +210,7 @@ export default function Team() {
         </div>
       </section>
 
-      {/* CLUB HEADS / CORE TEAM */}
+      {/* CORE TEAM / CLUB HEADS */}
       <section id="kk-leadership" className="kk-leadership">
         <div className="kk-section-heading">
           <div className="kk-section-kicker">
@@ -343,126 +335,65 @@ export default function Team() {
         )}
       </section>
 
-            {/* DOMAIN HEADS — HYBRID EDITORIAL SHOWCASE */}
-            <section className="kk-domains" id="kk-domains">
-              <div className="kk-domains-heading">
-                <div>
-                  <div className="kk-section-kicker">
-                    <Sparkles size={15} />
-                    THE MINDS BEHIND THE MAGIC
-                  </div>
+      {/* DOMAIN HEADS — COMPACT GRID */}
+      <section className="kk-domains" id="kk-domains">
+        <div className="kk-domains-heading">
+          <div>
+            <div className="kk-section-kicker">
+              <Sparkles size={15} />
+              THE MINDS BEHIND THE MAGIC
+            </div>
 
-                  <h2>
-                    Many talents. <span>One team.</span>
-                  </h2>
+            <h2>
+              Many talents. <span>One team.</span>
+            </h2>
 
-                  <p>
-                    Different strengths, shared ambition. Meet the people
-                    bringing every part of Kannada Koota to life.
-                  </p>
+            <p>
+              Meet the people bringing every part of Kannada Koota to life.
+            </p>
+          </div>
+
+          <div className="kk-domain-count">
+            <strong>
+              {String(domainHeads.length).padStart(2, '0')}
+            </strong>
+            <span>DOMAIN HEADS</span>
+          </div>
+        </div>
+
+        {domainHeads.length > 0 ? (
+          <div className="kk-domain-compact-grid">
+            {domainHeads.map((member, index) => (
+              <article className="kk-domain-person" key={member.id}>
+                <div className="kk-domain-person-photo">
+                  <MemberPortrait
+                    member={member}
+                    className="kk-domain-person-image"
+                  />
+
+                  <span className="kk-domain-person-number">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
                 </div>
-      
-                <div className="kk-domain-count">
-                  <strong>{String(domainHeads.length).padStart(2, '0')}</strong>
-                  <span>DOMAIN HEADS</span>
+
+                <div className="kk-domain-person-info">
+                  <span className="kk-domain-person-role">
+                    {member.domain || member.role}
+                  </span>
+
+                  <h3>{member.name}</h3>
+
+                  <SocialLinks member={member} />
                 </div>
-              </div>
-      
-              {domainHeads.length > 0 ? (
-                <div className="kk-domain-showcase">
-                  <div
-                    className="kk-domain-selector"
-                    role="tablist"
-                    aria-label="Choose a domain head"
-                  >
-                    {domainHeads.map((member, index) => (
-                      <button
-                        key={member.id}
-                        type="button"
-                        role="tab"
-                        id={`kk-domain-tab-${member.id}`}
-                        aria-selected={activeDomainIndex === index}
-                        aria-controls="kk-domain-feature"
-                        className={`kk-domain-tab ${
-                          activeDomainIndex === index ? 'active' : ''
-                        }`}
-                        onClick={() => setActiveDomainIndex(index)}
-                      >
-                        <span className="kk-domain-tab-number">
-                          {String(index + 1).padStart(2, '0')}
-                        </span>
-      
-                        <span className="kk-domain-tab-text">
-                          <strong>{member.name}</strong>
-                          <small>{member.domain || member.role || 'DOMAIN HEAD'}</small>
-                        </span>
-      
-                        <ArrowUpRight size={17} className="kk-domain-tab-arrow" />
-                      </button>
-                    ))}
-                  </div>
-      
-                  {/* DOMAIN HEADS — COMPACT TEAM GRID */}
-                  <section className="kk-domains" id="kk-domains">
-                    <div className="kk-domains-heading">
-                      <div>
-                        <div className="kk-section-kicker">
-                          <Sparkles size={15} />
-                          THE MINDS BEHIND THE MAGIC
-                        </div>
-            
-                        <h2>
-                          Many talents. <span>One team.</span>
-                        </h2>
-            
-                        <p>
-                          Meet the people bringing every part of Kannada Koota to life.
-                        </p>
-                      </div>
-            
-                      <div className="kk-domain-count">
-                        <strong>{String(domainHeads.length).padStart(2, '0')}</strong>
-                        <span>DOMAIN HEADS</span>
-                      </div>
-                    </div>
-            
-                    {domainHeads.length > 0 ? (
-                      <div className="kk-domain-compact-grid">
-                        {domainHeads.map((member, index) => (
-                          <article className="kk-domain-person" key={member.id}>
-                            <div className="kk-domain-person-photo">
-                              <MemberPortrait
-                                member={member}
-                                className="kk-domain-person-image"
-                              />
-                              <span className="kk-domain-person-number">
-                                {String(index + 1).padStart(2, '0')}
-                              </span>
-                            </div>
-            
-                            <div className="kk-domain-person-info">
-                              <span className="kk-domain-person-role">
-                                {member.domain || member.role || 'DOMAIN HEAD'}
-                              </span>
-            
-                              <h3>{member.name}</h3>
-            
-                              {member.domain && member.role &&
-                                member.domain !== member.role && (
-                                  <p>{member.role}</p>
-                                )}
-            
-                              <SocialLinks member={member} />
-                            </div>
-                          </article>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="kk-empty-state">
-                        No domain heads are available for {selectedYear}.
-                      </p>
-                    )}
-                  </section>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="kk-empty-state">
+            No domain heads are available for {selectedYear}.
+          </p>
+        )}
+      </section>
 
       {/* CLOSING SECTION */}
       <section className="kk-closing">
