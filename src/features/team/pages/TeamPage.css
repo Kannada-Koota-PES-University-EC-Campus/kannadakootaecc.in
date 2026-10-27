@@ -2190,3 +2190,100 @@
     transition: none;
   }
 }
+
+/* Smaller, balanced Head and Vice Head portraits */
+
+.kk-leader-pair {
+  max-width: 760px !important;
+  gap: 36px !important;
+  align-items: start;
+}
+
+.kk-leader-pair-photo {
+  max-width: 330px;
+  aspect-ratio: 4 / 4.5 !important;
+  margin-inline: auto;
+}
+
+.kk-leader-pair-info {
+  max-width: 330px;
+  margin-inline: auto;
+  padding-top: 14px !important;
+}
+
+.kk-leader-pair-info h3 {
+  font-size: clamp(20px, 2vw, 27px) !important;
+}
+
+@media (max-width: 640px) {
+  .kk-leader-pair {
+    gap: 18px !important;
+  }
+
+  .kk-leader-pair-photo {
+    aspect-ratio: 3 / 4 !important;
+  }
+
+  .kk-leader-pair-info h3 {
+    font-size: 17px !important;
+  }
+}
+
+/* Domain Heads — compact centered gallery */
+
+.kk-domain-gallery {
+  max-width: 700px;
+  margin-inline: auto;
+}
+
+.kk-domain-gallery-track .kk-domain-person-photo {
+  max-width: 290px !important;
+  aspect-ratio: 4 / 4.5 !important;
+}
+
+.kk-domain-gallery-track .kk-domain-person-info {
+  max-width: 290px !important;
+  padding-top: 14px !important;
+}
+
+.kk-domain-gallery-track .kk-domain-person-info h3 {
+  font-size: clamp(20px, 2vw, 27px) !important;
+}
+
+.kk-domain-gallery-track .kk-domain-person-role {
+  font-size: 10px;
+}
+
+.kk-domain-navigation {
+  max-width: 700px;
+  margin-inline: auto;
+  margin-top: 22px;
+}
+
+.kk-domain-arrow {
+  width: 38px;
+  height: 38px;
+}
+
+@media (max-width: 640px) {
+  .kk-domain-gallery {
+    max-width: 100%;
+  }
+
+  .kk-domain-gallery-track .kk-domain-person-photo {
+    max-width: 250px !important;
+    aspect-ratio: 3 / 4 !important;
+  }
+
+  .kk-domain-gallery-track .kk-domain-person-info {
+    max-width: 250px !important;
+  }
+
+  .kk-domain-navigation {
+    gap: 10px;
+  }
+
+  .kk-domain-swipe-hint {
+    font-size: 9px;
+  }
+}
