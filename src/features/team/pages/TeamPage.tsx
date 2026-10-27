@@ -90,6 +90,7 @@ export default function Team() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [activeDomainIndex, setActiveDomainIndex] = useState(0);
 
   const clubHeads = getClubHeads(selectedYear);
   const domainHeads = getDomainHeads(selectedYear);
@@ -99,6 +100,7 @@ export default function Team() {
   const changeYear = (year: number) => {
     setSelectedYear(year);
     setActiveIndex(0);
+    setActiveDomainIndex(0);
   };
 
   const changeMember = (direction: number) => {
@@ -340,80 +342,162 @@ export default function Team() {
         )}
       </section>
 
-      {/* DOMAIN HEADS */}
-      <section className="kk-domains">
-        <div className="kk-domains-heading">
-          <div>
-            <div className="kk-section-kicker">
-              <Sparkles size={15} />
-              THE MINDS BEHIND THE MAGIC
-            </div>
-
-            <h2>
-              Many talents. <span>One team.</span>
-            </h2>
-
-            <p>
-              From planning and design to culture and communication,
-              every contribution makes a difference.
-            </p>
-          </div>
-
-          <div className="kk-domain-count">
-            <strong>{String(domainHeads.length).padStart(2, '0')}</strong>
-            <span>DOMAIN HEADS</span>
-          </div>
-        </div>
-
-        {domainHeads.length > 0 ? (
-          <div className="kk-domain-grid">
-            {domainHeads.map((member, index) => (
-              <article className="kk-domain-member" key={member.id}>
-                <div className="kk-domain-image-wrap">
-                  <MemberPortrait
-                    member={member}
-                    className="kk-domain-image"
-                  />
-
-                  <span className="kk-domain-index">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-
-                  <div className="kk-domain-image-overlay" />
-                </div>
-
-                <div className="kk-domain-info">
-                  <span className="kk-domain-role">
-                    DOMAIN HEAD
-                  </span>
-
-                  <h3>{member.name}</h3>
-
-                  {member.domain && (
-                    <p className="kk-domain-name">{member.domain}</p>
-                  )}
-
-                  {member.bio && (
-                    <p className="kk-domain-bio">{member.bio}</p>
-                  )}
-
-                  <div className="kk-domain-footer">
-                    <SocialLinks member={member} />
-
-                    <span className="kk-domain-arrow">
-                      <ArrowUpRight size={18} />
-                    </span>
+            {/* DOMAIN HEADS — HYBRID EDITORIAL SHOWCASE */}
+            <section className="kk-domains" id="kk-domains">
+              <div className="kk-domains-heading">
+                <div>
+                  <div className="kk-section-kicker">
+                    <Sparkles size={15} />
+                    THE MINDS BEHIND THE MAGIC
                   </div>
+
+                  <h2>
+                    Many talents. <span>One team.</span>
+                  </h2>
+
+                  <p>
+                    Different strengths, shared ambition. Meet the people
+                    bringing every part of Kannada Koota to life.
+                  </p>
                 </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <p className="kk-empty-state">
-            No domain heads are available for {selectedYear}.
-          </p>
-        )}
-      </section>
+      
+                <div className="kk-domain-count">
+                  <strong>{String(domainHeads.length).padStart(2, '0')}</strong>
+                  <span>DOMAIN HEADS</span>
+                </div>
+              </div>
+      
+              {domainHeads.length > 0 ? (
+                <div className="kk-domain-showcase">
+                  <div
+                    className="kk-domain-selector"
+                    role="tablist"
+                    aria-label="Choose a domain head"
+                  >
+                    {domainHeads.map((member, index) => (
+                      <button
+                        key={member.id}
+                        type="button"
+                        role="tab"
+                        id={`kk-domain-tab-${member.id}`}
+                        aria-selected={activeDomainIndex === index}
+                        aria-controls="kk-domain-feature"
+                        className={`kk-domain-tab ${
+                          activeDomainIndex === index ? 'active' : ''
+                        }`}
+                        onClick={() => setActiveDomainIndex(index)}
+                      >
+                        <span className="kk-domain-tab-number">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+      
+                        <span className="kk-domain-tab-text">
+                          <strong>{member.name}</strong>
+                          <small>{member.domain || member.role || 'DOMAIN HEAD'}</small>
+                        </span>
+      
+                        <ArrowUpRight size={17} className="kk-domain-tab-arrow" />
+                      </button>
+                    ))}
+                  </div>
+      
+                  {domainHeads[activeDomainIndex] && (
+                    <article
+                      className="kk-domain-feature"
+                      id="kk-domain-feature"
+                      role="tabpanel"
+                      aria-labelledby={`kk-domain-tab-${domainHeads[activeDomainIndex].id}`}
+                      key={domainHeads[activeDomainIndex].id}
+                    >
+                      <div className="kk-domain-feature-visual">
+                        <MemberPortrait
+                          member={domainHeads[activeDomainIndex]}
+                          className="kk-domain-feature-image"
+                        />
+      
+                        <span className="kk-domain-feature-index">
+                          KKC / {String(activeDomainIndex + 1).padStart(2, '0')}
+                        </span>
+      
+                        <div className="kk-domain-feature-caption">
+                          <span>THE PEOPLE MAKE THE CULTURE</span>
+                          <span>ನಮ್ಮ ಹೆಮ್ಮೆ</span>
+                        </div>
+                      </div>
+      
+                      <div className="kk-domain-feature-info">
+                        <span className="kk-domain-role">
+                          DOMAIN HEAD / {String(activeDomainIndex + 1).padStart(2, '0')}
+                        </span>
+      
+                        <h3>{domainHeads[activeDomainIndex].name}</h3>
+      
+                        <p className="kk-domain-feature-domain">
+                          {domainHeads[activeDomainIndex].domain ||
+                            domainHeads[activeDomainIndex].role ||
+                            'Domain Head'}
+                        </p>
+      
+                        {domainHeads[activeDomainIndex].bio ? (
+                          <p className="kk-domain-feature-bio">
+                            {domainHeads[activeDomainIndex].bio}
+                          </p>
+                        ) : (
+                          <p className="kk-domain-feature-bio kk-domain-no-bio">
+                            Bringing ideas, initiative, and creativity together
+                            to make every Kannada Koota experience memorable.
+                          </p>
+                        )}
+      
+                        <div className="kk-domain-feature-footer">
+                          <SocialLinks member={domainHeads[activeDomainIndex]} />
+      
+                          <div className="kk-domain-feature-navigation">
+                            <button
+                              type="button"
+                              className="kk-arrow-button"
+                              aria-label="Previous domain head"
+                              onClick={() =>
+                                setActiveDomainIndex(
+                                  (current) =>
+                                    (current - 1 + domainHeads.length) %
+                                    domainHeads.length
+                                )
+                              }
+                              disabled={domainHeads.length < 2}
+                            >
+                              <ArrowLeft size={19} />
+                            </button>
+      
+                            <button
+                              type="button"
+                              className="kk-arrow-button kk-arrow-next"
+                              aria-label="Next domain head"
+                              onClick={() =>
+                                setActiveDomainIndex(
+                                  (current) => (current + 1) % domainHeads.length
+                                )
+                              }
+                              disabled={domainHeads.length < 2}
+                            >
+                              <ArrowRight size={19} />
+                            </button>
+                          </div>
+                        </div>
+      
+                        <span className="kk-domain-feature-hint">
+                          SELECT A NAME TO EXPLORE THE TEAM
+                        </span>
+                      </div>
+                    </article>
+                  )}
+                </div>
+              ) : (
+                <p className="kk-empty-state">
+                  No domain heads are available for {selectedYear}.
+                </p>
+              )}
+            </section>
 
       {/* CLOSING SECTION */}
       <section className="kk-closing">
