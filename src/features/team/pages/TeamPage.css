@@ -678,7 +678,7 @@
 }
 
 /* ==========================================
-   DOMAIN HEADS — HYBRID SHOWCASE
+   DOMAIN HEADS — STATIC EDITORIAL GRID
    ========================================== */
 
 .kk-domains {
@@ -692,7 +692,7 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 30px;
-  margin: 0 auto 48px;
+  margin: 0 auto;
 }
 
 .kk-domains-heading > div:first-child {
@@ -723,409 +723,272 @@
   letter-spacing: 0.12em;
 }
 
-/* Selector + featured profile */
-
-.kk-domain-showcase {
-  display: grid;
-  grid-template-columns: minmax(230px, 0.72fr) minmax(0, 1.65fr);
-  align-items: stretch;
-  gap: clamp(24px, 4vw, 64px);
-  max-width: 1120px;
-  margin: 48px auto 0;
-}
-
-.kk-domain-selector {
-  display: flex;
-  flex-direction: column;
-  align-self: start;
-  border-top: 1px solid hsl(var(--primary) / 0.35);
-}
-
-.kk-domain-tab {
-  position: relative;
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) 20px;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 20px 12px;
-  border: 0;
-  border-bottom: 1px solid hsl(var(--foreground) / 0.12);
-  background: transparent;
-  color: hsl(var(--foreground) / 0.65);
-  text-align: left;
-  cursor: pointer;
-  transition:
-    background 220ms ease,
-    color 220ms ease,
-    padding 220ms ease;
-}
-
-.kk-domain-tab:hover,
-.kk-domain-tab.active {
-  padding-left: 18px;
-  background: hsl(var(--primary) / 0.07);
-  color: hsl(var(--foreground));
-}
-
-.kk-domain-tab.active {
-  box-shadow: inset 3px 0 hsl(var(--primary));
-}
-
-.kk-domain-tab-number {
-  align-self: start;
-  padding-top: 3px;
-  color: hsl(var(--primary));
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
-.kk-domain-tab-text {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.kk-domain-tab-text strong {
-  overflow-wrap: anywhere;
-  font-size: clamp(14px, 1.15vw, 17px);
-  font-weight: 600;
-  line-height: 1.35;
-}
-
-.kk-domain-tab-text small {
-  color: hsl(var(--foreground) / 0.55);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  line-height: 1.5;
-  text-transform: uppercase;
-}
-
-.kk-domain-tab-arrow {
-  color: hsl(var(--primary));
-  opacity: 0.45;
-  transition:
-    opacity 220ms ease,
-    transform 220ms ease;
-}
-
-.kk-domain-tab:hover .kk-domain-tab-arrow,
-.kk-domain-tab.active .kk-domain-tab-arrow {
-  transform: translate(2px, -2px);
-  opacity: 1;
-}
-
-/* Featured domain profile */
-
-.kk-domain-feature {
-  display: grid;
-  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
-  min-width: 0;
-  min-height: 410px;
-  border: 1px solid hsl(var(--primary) / 0.25);
-  background: hsl(var(--card) / 0.35);
-  animation: kk-domain-reveal 350ms ease both;
-}
-
-.kk-domain-feature-visual {
-  position: relative;
-  display: flex;
-  min-width: 0;
-  min-height: 410px;
-  overflow: hidden;
-  background: hsl(var(--background));
-}
-
-.kk-domain-feature-image {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.kk-domain-feature-visual .kk-photo-placeholder {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  min-height: 100%;
-}
-
-.kk-domain-feature-index {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 2;
-  padding: 8px 10px;
-  border: 1px solid hsl(var(--primary) / 0.55);
-  background: hsl(var(--background) / 0.78);
-  color: hsl(var(--foreground));
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  backdrop-filter: blur(8px);
-}
-
-.kk-domain-feature-caption {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 36px 20px 20px;
-  background: linear-gradient(transparent, rgb(0 0 0 / 82%));
-  color: white;
-}
-
-.kk-domain-feature-caption span:first-child {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.13em;
-}
-
-.kk-domain-feature-caption span:last-child {
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.kk-domain-feature-info {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  padding: clamp(24px, 3vw, 44px);
-}
-
-.kk-domain-feature-info .kk-domain-role {
-  color: hsl(var(--primary));
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.15em;
-  line-height: 1.6;
-}
-
-.kk-domain-feature-info h3 {
-  margin: 18px 0 0;
-  color: hsl(var(--foreground));
-  font-size: clamp(26px, 3vw, 42px);
-  font-weight: 650;
-  line-height: 1.12;
-  overflow-wrap: anywhere;
-}
-
-.kk-domain-feature-domain {
-  margin: 12px 0 0;
-  color: hsl(var(--primary));
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1.6;
-  text-transform: uppercase;
-}
-
-.kk-domain-feature-bio {
-  margin: 22px 0 0;
-  color: hsl(var(--foreground) / 0.7);
-  font-size: 14px;
-  line-height: 1.9;
-}
-
-.kk-domain-feature-bio.kk-domain-no-bio {
-  font-style: italic;
-}
-
-.kk-domain-feature-footer {
-  display: flex;
-  width: 100%;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  margin-top: 28px;
-  padding-top: 20px;
-  border-top: 1px solid hsl(var(--foreground) / 0.12);
-}
-
-.kk-domain-feature-navigation {
-  display: flex;
-  gap: 8px;
-}
-
-.kk-domain-feature-navigation .kk-arrow-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.35;
-}
-
-.kk-domain-feature-hint {
-  margin-top: 24px;
-  color: hsl(var(--foreground) / 0.45);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.11em;
-  line-height: 1.6;
-}
-
-/* Keep these rules in case the component still uses the old grid. */
+/* All Domain Heads displayed together */
 
 .kk-domain-grid {
   display: grid;
   max-width: 1120px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 30px 22px;
-  margin: 0 auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  gap: 48px 24px;
+  width: 100%;
+  margin: 48px auto 0;
 }
 
-.kk-domain-member {
-  min-width: 0;
-  border: 1px solid var(--kk-line);
-  background: var(--background);
-  transition:
-    transform 0.25s ease,
-    border-color 0.25s ease;
-}
+/* Individual portrait — no card backgrounds */
 
-.kk-domain-member:nth-child(3n + 2) {
-  transform: translateY(24px);
-}
-
-.kk-domain-member:hover {
-  z-index: 1;
-  border-color: hsl(var(--primary) / 0.5);
-  transform: translateY(-5px);
-}
-
-.kk-domain-member:nth-child(3n + 2):hover {
-  transform: translateY(19px);
-}
-
-.kk-domain-image-wrap {
+.kk-domain-grid .kk-domain-person {
   position: relative;
-  height: 260px;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Portrait */
+
+.kk-domain-grid .kk-domain-person-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 4.8;
   overflow: hidden;
   background: hsl(var(--primary) / 0.08);
 }
 
-.kk-domain-image {
-  width: 100%;
-  height: 100%;
-  object-position: center 35%;
-  transition: transform 0.5s ease;
+/* Gold accent */
+
+.kk-domain-grid .kk-domain-person-photo::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 3;
+  height: 3px;
+  background: var(--kk-primary);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 350ms ease;
 }
 
-.kk-domain-member:hover .kk-domain-image {
+.kk-domain-grid .kk-domain-person:hover
+.kk-domain-person-photo::before {
+  transform: scaleX(1);
+}
+
+/* Member images */
+
+.kk-domain-grid .kk-domain-person-photo img,
+.kk-domain-grid .kk-domain-person-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  transition: transform 500ms ease;
+}
+
+.kk-domain-grid .kk-domain-person:hover
+.kk-domain-person-photo img {
   transform: scale(1.045);
 }
 
-.kk-domain-image-wrap .kk-photo-placeholder {
-  min-height: 100%;
+/* Photo placeholder */
+
+.kk-domain-grid .kk-domain-person-photo .kk-photo-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
 }
 
-.kk-domain-index {
+/* Portrait number */
+
+.kk-domain-grid .kk-domain-person-number {
   position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 2;
-  display: grid;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  border: 1px solid hsl(var(--background) / 0.5);
-  background: hsl(var(--background) / 0.85);
-  color: var(--kk-ink);
+  top: 12px;
+  left: 12px;
+  z-index: 4;
+  padding: 7px 9px;
+  border: 1px solid rgb(255 255 255 / 35%);
+  background: rgb(20 20 20 / 45%);
+  color: white;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   backdrop-filter: blur(8px);
 }
 
-.kk-domain-image-overlay {
-  position: absolute;
-  inset: 55% 0 0;
-  background: linear-gradient(transparent, hsl(var(--background) / 0.3));
-  pointer-events: none;
+/* Name and role */
+
+.kk-domain-grid .kk-domain-person-info {
+  position: relative;
+  max-width: none;
+  margin: 0;
+  padding: 17px 0 0;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
-.kk-domain-info {
-  padding: 23px 20px 20px;
-}
-
-.kk-domain-role {
+.kk-domain-grid .kk-domain-person-role {
+  display: block;
+  margin-bottom: 9px;
   color: var(--kk-primary);
   font-size: 9px;
   font-weight: 800;
-  letter-spacing: 0.14em;
-}
-
-.kk-domain-info h3 {
-  margin: 11px 0 9px;
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1.45;
-  letter-spacing: -0.025em;
+  letter-spacing: 0.12em;
+  line-height: 1.6;
+  text-transform: uppercase;
   overflow-wrap: anywhere;
 }
 
-.kk-domain-name {
-  min-height: 25px;
+.kk-domain-grid .kk-domain-person-info h3 {
   margin: 0;
-  color: var(--kk-muted);
-  font-size: 12px;
-  line-height: 1.8;
+  color: var(--kk-ink);
+  font-size: clamp(16px, 1.5vw, 21px);
+  font-weight: 750;
+  line-height: 1.4;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+  transition: color 250ms ease;
 }
 
-.kk-domain-bio {
-  color: var(--kk-muted);
-  font-size: 12px;
-  line-height: 1.8;
-}
-
-.kk-domain-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 21px;
-  padding-top: 17px;
-  border-top: 1px solid var(--kk-line);
-}
-
-.kk-domain-footer .kk-socials {
-  gap: 7px;
-}
-
-.kk-domain-footer .kk-social-link {
-  width: 32px;
-  height: 32px;
-}
-
-.kk-domain-arrow {
-  display: grid;
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-  place-items: center;
-  border: 1px solid var(--kk-line);
-  border-radius: 50%;
+.kk-domain-grid .kk-domain-person:hover
+.kk-domain-person-info h3 {
   color: var(--kk-primary);
 }
 
-.kk-empty-state {
-  padding: 45px 20px;
-  color: var(--kk-muted);
-  text-align: center;
+/* Social links */
+
+.kk-domain-grid .kk-domain-person-info .kk-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
 }
 
-/* ==========================================
-   CLOSING SECTION
-   ========================================== */
+.kk-domain-grid .kk-domain-person-info .kk-social-link {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--kk-muted);
+  transition:
+    color 200ms ease,
+    transform 200ms ease;
+}
+
+.kk-domain-grid .kk-domain-person-info .kk-social-link:hover {
+  background: transparent;
+  color: var(--kk-primary);
+  transform: translateY(-2px);
+}
+
+/* Tablet */
+
+@media (max-width: 900px) {
+  .kk-domain-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 38px 20px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .kk-domains {
+    padding: 75px 18px 85px;
+  }
+
+  .kk-domains-heading {
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .kk-domains-heading .kk-section-kicker {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+  }
+
+  .kk-domains-heading h2 {
+    font-size: 36px;
+  }
+
+  .kk-domain-count {
+    min-width: auto;
+    padding-top: 5px;
+  }
+
+  .kk-domain-count strong {
+    font-size: 37px;
+  }
+
+  .kk-domain-count span {
+    font-size: 7px;
+    text-align: right;
+  }
+
+  .kk-domain-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px 14px;
+    margin-top: 32px;
+  }
+
+  .kk-domain-grid .kk-domain-person-number {
+    top: 8px;
+    left: 8px;
+    padding: 5px 7px;
+    font-size: 9px;
+  }
+
+  .kk-domain-grid .kk-domain-person-info {
+    padding-top: 12px;
+  }
+
+  .kk-domain-grid .kk-domain-person-role {
+    margin-bottom: 6px;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+  }
+
+  .kk-domain-grid .kk-domain-person-info h3 {
+    font-size: 15px;
+  }
+
+  .kk-domain-grid .kk-domain-person-info .kk-socials {
+    gap: 5px;
+    margin-top: 8px;
+  }
+
+  .kk-domain-grid .kk-domain-person-info .kk-social-link {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+/* Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+  .kk-domain-grid .kk-domain-person-photo img,
+  .kk-domain-grid .kk-domain-person-photo::before,
+  .kk-domain-grid .kk-domain-person-info h3 {
+    transition: none;
+  }
+}
 
 .kk-closing {
   position: relative;
