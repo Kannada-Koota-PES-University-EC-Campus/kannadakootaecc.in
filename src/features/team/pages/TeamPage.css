@@ -2149,3 +2149,546 @@
     font-size: 9px;
   }
 }
+
+/* =====================================================
+   KANNADA KOOTA ECC — KARNATAKA CONTEMPORARY THEME
+   Red • Golden Yellow • Ivory • Charcoal
+   Append at the very end of TeamPage.css
+   ===================================================== */
+
+.koota-team-page {
+  --kk-red: #c62828;
+  --kk-red-dark: #741818;
+  --kk-gold: #ffd43b;
+  --kk-ivory: #fff7e8;
+  --kk-charcoal: #28201e;
+  --kk-brown: #705a50;
+
+  color: var(--kk-charcoal);
+  background: var(--kk-ivory);
+}
+
+/* Keep typography and controls consistent */
+.koota-team-page .kk-hero,
+.koota-team-page .kk-year-bar,
+.koota-team-page .kk-leadership,
+.koota-team-page .kk-domains {
+  color: var(--kk-charcoal);
+}
+
+/* =====================================================
+   HERO — BOLD KARNATAKA RED
+   ===================================================== */
+
+.koota-team-page .kk-hero {
+  isolation: isolate;
+  background:
+    radial-gradient(
+      ellipse at 12% 25%,
+      rgb(255 212 59 / 16%),
+      transparent 36%
+    ),
+    radial-gradient(
+      ellipse at 88% 75%,
+      rgb(255 255 255 / 7%),
+      transparent 36%
+    ),
+    linear-gradient(
+      135deg,
+      #741818 0%,
+      #a51f25 48%,
+      #c62828 100%
+    );
+  color: var(--kk-ivory);
+}
+
+/* Subtle diagonal Karnataka-inspired pattern */
+.koota-team-page .kk-hero::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0,
+      transparent 45px,
+      rgb(255 212 59 / 5%) 46px,
+      rgb(255 212 59 / 5%) 48px,
+      transparent 49px,
+      transparent 92px
+    );
+  content: "";
+  pointer-events: none;
+}
+
+.koota-team-page .kk-hero-decoration {
+  border-color: rgb(255 212 59 / 28%);
+}
+
+.koota-team-page .kk-eyebrow,
+.koota-team-page .kk-section-kicker {
+  color: var(--kk-red);
+}
+
+.koota-team-page .kk-hero .kk-eyebrow {
+  color: var(--kk-gold);
+}
+
+.koota-team-page .kk-hero-title {
+  color: var(--kk-ivory);
+  text-shadow: 0 5px 28px rgb(0 0 0 / 15%);
+}
+
+.koota-team-page .kk-hero-title span {
+  color: var(--kk-gold);
+}
+
+.koota-team-page .kk-hero-subtitle {
+  color: var(--kk-ivory);
+}
+
+.koota-team-page .kk-hero-description {
+  color: rgb(255 247 232 / 82%);
+}
+
+.koota-team-page .kk-eyebrow-line {
+  background: var(--kk-gold);
+  opacity: 0.9;
+}
+
+/* Explore button */
+.koota-team-page .kk-explore-link {
+  border-color: var(--kk-gold);
+  background: var(--kk-gold);
+  color: var(--kk-red-dark);
+  box-shadow: 0 8px 25px rgb(0 0 0 / 12%);
+}
+
+.koota-team-page .kk-explore-link:hover {
+  border-color: var(--kk-ivory);
+  background: var(--kk-ivory);
+  color: var(--kk-red-dark);
+}
+
+.koota-team-page .kk-hero-bottom {
+  color: rgb(255 247 232 / 78%);
+}
+
+.koota-team-page .kk-bottom-dot {
+  color: var(--kk-gold);
+}
+
+/* =====================================================
+   GROUP PHOTO — RED AND GOLD FRAME
+   ===================================================== */
+
+.koota-team-page .kk-group-photo {
+  border: 2px solid var(--kk-gold);
+  border-radius: 3px;
+  background: var(--kk-red-dark);
+  box-shadow:
+    0 0 0 6px rgb(255 212 59 / 10%),
+    0 24px 65px rgb(0 0 0 / 28%);
+}
+
+.koota-team-page .kk-group-photo-pattern {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 17px,
+      rgb(255 212 59 / 9%) 18px,
+      transparent 19px,
+      transparent 36px
+    );
+}
+
+.koota-team-page .kk-group-icon {
+  border-color: var(--kk-gold);
+  background: rgb(116 24 24 / 65%);
+  color: var(--kk-gold);
+}
+
+.koota-team-page .kk-group-kannada {
+  color: var(--kk-ivory);
+}
+
+.koota-team-page .kk-group-english {
+  color: var(--kk-gold);
+}
+
+.koota-team-page .kk-group-hint {
+  color: rgb(255 247 232 / 75%);
+}
+
+.koota-team-page .kk-photo-index {
+  border-color: var(--kk-gold);
+  background: rgb(116 24 24 / 75%);
+  color: var(--kk-gold);
+}
+
+/* =====================================================
+   YEAR SELECTOR — GOLD ACTIVE STATE
+   ===================================================== */
+
+.koota-team-page .kk-year-bar {
+  border-color: rgb(198 40 40 / 18%);
+  background: rgb(255 247 232 / 94%);
+  box-shadow: 0 5px 22px rgb(91 36 25 / 5%);
+}
+
+.koota-team-page .kk-year-label > span {
+  color: var(--kk-brown);
+}
+
+.koota-team-page .kk-year-label > strong {
+  color: var(--kk-red-dark);
+}
+
+.koota-team-page .kk-year-button {
+  border-color: rgb(198 40 40 / 22%);
+  color: var(--kk-red-dark);
+}
+
+.koota-team-page .kk-year-button:hover,
+.koota-team-page .kk-year-button.active {
+  border-color: var(--kk-red);
+  background: var(--kk-red);
+  color: white;
+  box-shadow: inset 0 -3px 0 var(--kk-gold);
+}
+
+/* =====================================================
+   GENERAL SECTION HEADINGS
+   ===================================================== */
+
+.koota-team-page .kk-section-heading h2,
+.koota-team-page .kk-domains-heading h2 {
+  color: var(--kk-charcoal);
+}
+
+.koota-team-page .kk-section-heading h2 span,
+.koota-team-page .kk-domains-heading h2 span {
+  color: var(--kk-red);
+}
+
+.koota-team-page .kk-section-heading > p,
+.koota-team-page .kk-domains-heading > div > p {
+  color: var(--kk-brown);
+}
+
+/* Decorative lines under section kickers */
+.koota-team-page .kk-section-kicker::before {
+  display: block;
+  width: 20px;
+  height: 3px;
+  background: var(--kk-gold);
+  content: "";
+}
+
+/* =====================================================
+   HEAD AND VICE HEAD — EDITORIAL TREATMENT
+   ===================================================== */
+
+.koota-team-page .kk-leadership {
+  background: var(--kk-ivory);
+}
+
+.koota-team-page .kk-leader-visual {
+  border: 1px solid rgb(198 40 40 / 24%);
+  background:
+    linear-gradient(
+      145deg,
+      rgb(255 212 59 / 18%),
+      transparent 48%
+    ),
+    linear-gradient(
+      160deg,
+      #f2dfc6,
+      #fff7e8
+    );
+  box-shadow: inset 0 -5px 0 var(--kk-red);
+}
+
+.koota-team-page .kk-leader-visual-top {
+  color: var(--kk-red-dark);
+}
+
+.koota-team-page .kk-leader-visual-bottom {
+  color: var(--kk-red);
+}
+
+.koota-team-page .kk-leader-image-caption {
+  background: linear-gradient(
+    transparent,
+    rgb(255 247 232 / 95%)
+  );
+  color: var(--kk-red-dark);
+}
+
+.koota-team-page .kk-member-number {
+  color: var(--kk-red);
+}
+
+.koota-team-page .kk-leader-details h3 {
+  color: var(--kk-charcoal);
+}
+
+.koota-team-page .kk-role-label {
+  border-color: var(--kk-red);
+  background: rgb(198 40 40 / 6%);
+  color: var(--kk-red);
+}
+
+.koota-team-page .kk-leader-bio,
+.koota-team-page .kk-leader-quote {
+  color: var(--kk-brown);
+}
+
+.koota-team-page .kk-leader-quote {
+  border-left: 4px solid var(--kk-gold);
+}
+
+.koota-team-page .kk-leader-navigation {
+  border-color: rgb(198 40 40 / 20%);
+}
+
+.koota-team-page .kk-leader-dot {
+  background: #dfcfc0;
+}
+
+.koota-team-page .kk-leader-dot.active {
+  background: var(--kk-red);
+  box-shadow: 0 0 0 3px rgb(255 212 59 / 45%);
+}
+
+.koota-team-page .kk-arrow-button {
+  border-color: rgb(198 40 40 / 35%);
+  color: var(--kk-red);
+}
+
+.koota-team-page .kk-arrow-button:hover,
+.koota-team-page .kk-arrow-next {
+  border-color: var(--kk-red);
+  background: var(--kk-red);
+  color: white;
+}
+
+.koota-team-page .kk-swipe-hint {
+  color: var(--kk-brown);
+}
+
+/* Side-by-side leader layout, if used by the component */
+.koota-team-page .kk-leader-pair-photo {
+  border: 1px solid rgb(198 40 40 / 20%);
+  background: #f2dfc6;
+  box-shadow: 0 6px 0 var(--kk-gold);
+}
+
+.koota-team-page .kk-leader-pair-number {
+  border: 2px solid var(--kk-ivory);
+  background: var(--kk-red);
+  color: var(--kk-gold);
+}
+
+.koota-team-page .kk-leader-pair-info h3 {
+  color: var(--kk-charcoal);
+}
+
+/* =====================================================
+   DOMAIN HEADS — IVORY GALLERY WITH RED AND GOLD
+   ===================================================== */
+
+.koota-team-page .kk-domains {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(
+      ellipse at 0% 0%,
+      rgb(255 212 59 / 13%),
+      transparent 36%
+    ),
+    var(--kk-ivory);
+}
+
+.koota-team-page .kk-domains::before {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 7px;
+  background: linear-gradient(
+    90deg,
+    var(--kk-red) 0%,
+    var(--kk-red) 48%,
+    var(--kk-gold) 48%,
+    var(--kk-gold) 100%
+  );
+  content: "";
+}
+
+.koota-team-page .kk-domain-count strong {
+  color: var(--kk-red);
+}
+
+.koota-team-page .kk-domain-count span {
+  color: var(--kk-brown);
+}
+
+/* Static grid */
+.koota-team-page .kk-domains .kk-domain-grid {
+  gap: 50px 25px;
+}
+
+/* Portrait styling */
+.koota-team-page .kk-domains .kk-domain-person-photo {
+  border: 1px solid rgb(198 40 40 / 16%);
+  background: #f0dfc8;
+  box-shadow: 5px 5px 0 rgb(255 212 59 / 65%);
+}
+
+.koota-team-page .kk-domains .kk-domain-person-photo::before {
+  height: 5px;
+  background: var(--kk-red);
+}
+
+/* Portrait number badge */
+.koota-team-page .kk-domains .kk-domain-person-number {
+  border: 1px solid var(--kk-gold);
+  background: rgb(116 24 24 / 90%);
+  color: var(--kk-gold);
+}
+
+/* Member names */
+.koota-team-page .kk-domains .kk-domain-person-info h3 {
+  color: var(--kk-charcoal);
+}
+
+.koota-team-page .kk-domains .kk-domain-person:hover
+.kk-domain-person-info h3 {
+  color: var(--kk-red);
+}
+
+/* Role labels */
+.koota-team-page .kk-domains .kk-domain-person-role {
+  color: var(--kk-red);
+}
+
+/* Social icons */
+.koota-team-page .kk-domains .kk-domain-person-info .kk-social-link {
+  color: var(--kk-red-dark);
+}
+
+.koota-team-page .kk-domains .kk-domain-person-info .kk-social-link:hover {
+  color: var(--kk-red);
+}
+
+/* Keep the gallery static and evenly aligned */
+.koota-team-page .kk-domains .kk-domain-grid .kk-domain-person {
+  margin-top: 0;
+  transform: none;
+}
+
+/* =====================================================
+   CLOSING SECTION — SIGNATURE RED AND GOLD
+   ===================================================== */
+
+.koota-team-page .kk-closing {
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgb(255 212 59 / 16%),
+      transparent 55%
+    ),
+    linear-gradient(
+      135deg,
+      #741818,
+      #a51f25 55%,
+      #c62828
+    );
+  color: var(--kk-ivory);
+}
+
+.koota-team-page .kk-closing-pattern {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 28px,
+      rgb(255 212 59 / 8%) 29px,
+      transparent 30px,
+      transparent 56px
+    );
+  opacity: 0.7;
+}
+
+.koota-team-page .kk-closing-kicker {
+  color: var(--kk-gold);
+}
+
+.koota-team-page .kk-closing h2 {
+  color: var(--kk-ivory);
+}
+
+.koota-team-page .kk-closing h2 span {
+  color: var(--kk-gold);
+  opacity: 1;
+}
+
+.koota-team-page .kk-closing-content > p {
+  color: rgb(255 247 232 / 85%);
+}
+
+.koota-team-page .kk-join-button {
+  border-color: var(--kk-gold) !important;
+  background: var(--kk-gold) !important;
+  color: var(--kk-red-dark) !important;
+}
+
+.koota-team-page .kk-join-button:hover {
+  background: var(--kk-ivory) !important;
+  color: var(--kk-red-dark) !important;
+}
+
+.koota-team-page .kk-closing-mark {
+  border-color: rgb(255 212 59 / 40%);
+  color: var(--kk-gold);
+}
+
+/* =====================================================
+   ACCESSIBILITY AND RESPONSIVE POLISH
+   ===================================================== */
+
+.koota-team-page a:focus-visible,
+.koota-team-page button:focus-visible {
+  outline: 3px solid var(--kk-gold);
+  outline-offset: 4px;
+}
+
+@media (max-width: 600px) {
+  .koota-team-page .kk-hero {
+    padding-top: 55px;
+  }
+
+  .koota-team-page .kk-domains {
+    padding-top: 80px;
+  }
+
+  .koota-team-page .kk-domains .kk-domain-grid {
+    gap: 34px 16px;
+  }
+
+  .koota-team-page .kk-domains .kk-domain-person-photo {
+    box-shadow: 3px 3px 0 rgb(255 212 59 / 70%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .koota-team-page .kk-domain-person-photo img,
+  .koota-team-page .kk-domain-person-photo::before,
+  .koota-team-page .kk-domain-person-info h3,
+  .koota-team-page .kk-group-photo-image {
+    transition: none;
+  }
+}
