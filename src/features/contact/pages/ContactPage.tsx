@@ -50,7 +50,7 @@ export default function Contact() {
         title: 'Message sent successfully! ಧನ್ಯವಾದಗಳು',
         description: data.sandboxFallback
           ? `Your message has been delivered to ${data.recipient} (Resend test sandbox mode).`
-          : 'Thank you for reaching out! Our team has received your message at it.team.kannadakootaecc@gmail.com.',
+          : 'Thank you for reaching out! Our team has received your message. We will get back to you shortly :)',
       });
 
       setFormData({
