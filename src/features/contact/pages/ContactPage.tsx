@@ -179,7 +179,6 @@ export default function Contact() {
                       <p className="text-muted-foreground">
                         <a href="mailto:it.team.kannadakootaecc@gmail.com" className="hover:underline">kannadakoota.ecc@pes.edu</a>
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1">kannadakoota.ecc@pes.edu</p>
                     </div>
                   </div>
                   
