@@ -191,7 +191,6 @@ export default function Team() {
               </span>
             </div>
 
-            <span className="kk-photo-index">KKC / ECC</span>
           </div>
 
           <div className="kk-hero-bottom">
