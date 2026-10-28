@@ -25,7 +25,7 @@ export const teamData: Record<number, Member[]> = {
     {
       id: 'ch-2026-2', 
       name: 'ಎಸ್.ಧ್ಯಾನ್ / S.Dhyan',
-      role: 'Vice Head',
+      role: 'Club Head',
       year: 2026,
       photo: '/DomainHeads/photo.jpeg',
       linkedin: 'https://www.linkedin.com/in/s-dhyan/',
