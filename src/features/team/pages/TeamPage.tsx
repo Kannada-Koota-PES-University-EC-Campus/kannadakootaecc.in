@@ -120,22 +120,7 @@ export default function Team() {
   const clubHeads = getClubHeads(selectedYear);
   const domainHeads = getDomainHeads(selectedYear);
 
-  const viceHead = clubHeads.find((member) =>
-    /\bvice\s*head\b/i.test(member.role)
-  );
-
-  const head = clubHeads.find(
-    (member) =>
-      /\bhead\b/i.test(member.role) &&
-      !/\bvice\s*head\b/i.test(member.role)
-  );
-
-  const displayedLeaders =
-    head || viceHead
-      ? [head, viceHead].filter(
-          (member): member is Member => Boolean(member)
-        )
-      : clubHeads.slice(0, 2);
+  const displayedLeaders = clubHeads.slice(0, 2);
 
   const changeYear = (year: number) => {
     setSelectedYear(year);
