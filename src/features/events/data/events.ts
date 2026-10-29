@@ -60,6 +60,8 @@ export const events: Event[] = [
     photos: [
       img("rajyotsava-2025", "video-poster", 1600, 898, "Yakshagana performer on the Utsava 2K25 stage"),
       img("rajyotsava-2025", "yakshagana-2k25", 1153, 1600, "Yakshagana performer in full costume at Utsava 2K25"),
+      img("rajyotsava-2025", "utsava-dancers", 1600, 1290, "Dancers strike a pose under the Utsava 2K25 lights"),
+      img("rajyotsava-2025", "utsava-pushpanjali", 1227, 825, "Pushpanjali on the Utsava 2K25 stage"),
     ],
     posters: [
       img("rajyotsava-2025", "2025", 1179, 916, "Utsava 2K25 invitation"),
