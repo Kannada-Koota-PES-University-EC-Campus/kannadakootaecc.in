@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Blogs from "@/features/blogs/pages/BlogsPage";
 import Index from "@/features/home/pages/IndexPage";
 import Events from "@/features/events/pages/EventsPage";
+import EventDetail from "@/features/events/pages/EventDetailPage";
 import Team from "@/features/team/pages/TeamPage";
 import Contact from "@/features/contact/pages/ContactPage";
 import NotFound from "@/app/pages/NotFoundPage";
@@ -42,7 +43,7 @@ const PAGE_CURSOR: Record<string, string> = {
 function CursorZone({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   return (
-    <main className="flex-1" data-cursor={PAGE_CURSOR[pathname] ?? "water"}>
+    <main className="flex-1" data-cursor={PAGE_CURSOR[pathname] ?? PAGE_CURSOR[`/${pathname.split("/")[1]}`] ?? "water"}>
       {children}
     </main>
   );
@@ -74,6 +75,7 @@ const AppContent = () => (
               <Route path="/" element={<Index />} />
               <Route path="/blogs" element={<Blogs />} />
               <Route path="/events" element={<Events />} />
+              <Route path="/events/:slug" element={<EventDetail />} />
               <Route path="/team" element={<Team />} />
               {/* <Route path="/upis" element={<Upis />} /> */}
               <Route path="/contact" element={<Contact />} />

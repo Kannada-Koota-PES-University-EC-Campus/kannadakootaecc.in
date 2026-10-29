@@ -4,6 +4,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/tests/setupTests.ts'],
   moduleNameMapper: {
+    '\\.css$': '<rootDir>/src/tests/styleStub.ts',
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   transform: {
