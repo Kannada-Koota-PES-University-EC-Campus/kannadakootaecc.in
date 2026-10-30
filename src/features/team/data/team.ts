@@ -57,7 +57,7 @@ export const teamData: Record<number, Member[]> = {
       role: 'Domain Head', 
       domain: 'ಸರಕು ಸಾಗಾಣಿಕೆ / Logistics',
       year: 2026,
-      photo: 'public/DomainHeads/2026/tejeswar.jpg',
+      photo: '/DomainHeads/2026/tejeswar.jpg',
       linkedin: 'https://www.linkedin.com/in/palla-tejeswar-reddy',
       instagram: 'https://www.instagram.com/tejeswarp2006/',
     },
