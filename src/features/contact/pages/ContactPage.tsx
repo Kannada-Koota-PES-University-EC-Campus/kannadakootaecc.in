@@ -200,7 +200,7 @@ export default function Contact() {
                     <div>
                       <h3 className="font-semibold text-foreground">Email</h3>
                       <p className="text-muted-foreground">
-                        <a href="mailto:it.team.kannadakootaecc@gmail.com" className="hover:underline">kannadakoota.ecc@pes.edu</a>
+                        <a href="mailto:kannadakoota.ecc@pes.edu" className="hover:underline">kannadakoota.ecc@pes.edu</a>
                       </p>
                     </div>
                   </div>
