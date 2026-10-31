@@ -32,7 +32,7 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/send-email', {
+      let response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,7 +40,30 @@ export default function Contact() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      let data = await response.json().catch(() => ({}));
+
+      // If the current origin deployment returns an error (e.g. missing RESEND_API_KEY on custom host),
+      // seamlessly fallback to the Cloudflare Pages backend relay
+      if (!response.ok || !data.success) {
+        if (!window.location.hostname.includes('kannada-koota-ecc.pages.dev')) {
+          try {
+            const fallbackRes = await fetch('https://kannada-koota-ecc.pages.dev/api/send-email', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(formData),
+            });
+            const fallbackData = await fallbackRes.json().catch(() => ({}));
+            if (fallbackRes.ok && fallbackData.success) {
+              response = fallbackRes;
+              data = fallbackData;
+            }
+          } catch {
+            // fallback attempt failed, proceed with original response
+          }
+        }
+      }
 
       if (!response.ok || !data.success) {
         throw new Error(data.error || 'Failed to send your message. Please try again.');
@@ -177,7 +200,7 @@ export default function Contact() {
                     <div>
                       <h3 className="font-semibold text-foreground">Email</h3>
                       <p className="text-muted-foreground">
-                        <a href="mailto:it.team.kannadakootaecc@gmail.com" className="hover:underline">kannadakoota.ecc@pes.edu</a>
+                        <a href="mailto:it.team.kannadakootaecc@gmail.com" className="hover:underline">it.team.kannadakootaecc@gmail.com</a>
                       </p>
                     </div>
                   </div>
