@@ -34,20 +34,11 @@ const SOUND_KEY = "kkc-intro-sound";
 const readSound = () => { try { return localStorage.getItem(SOUND_KEY) !== "off"; } catch { return true; } };
 const saveSound = (on: boolean) => { try { localStorage.setItem(SOUND_KEY, on ? "on" : "off"); } catch { /* private mode */ } };
 
-// Each screen gets the film it can show: 4K only on big, sharp screens with fast internet,
-// 1080p on ordinary laptops, 720p on phones and for data-saver visitors.
-const FILM_4K = "/intro/film-2160.mp4";
-const FILM_HD = "/intro/film-1080.mp4";
-const filmSrc = () => {
-  const conn = (navigator as Navigator & { connection?: { saveData?: boolean; downlink?: number } }).connection;
-  if (conn?.saveData || Math.min(window.innerWidth, window.innerHeight) < 600) return "/intro/film-720.mp4";
-  const screenPx = Math.max(window.innerWidth, window.innerHeight) * (window.devicePixelRatio || 1);
-  // Mbps, a rough guess where the browser gives one (Chrome never says more than 10); if 4K still
-  // cannot keep up, the film drops to 1080p by itself (see onWaiting)
-  const slow = conn?.downlink !== undefined && conn.downlink < 5;
-  return screenPx >= 2400 && !slow ? FILM_4K : FILM_HD;
-};
-const STALL_MS = 2500; // the 4K film buffering this long falls back to 1080p
+// The film is cut into 4-second pieces at 4K, 1080p and 720p (public/intro/hls; the host only
+// takes files under 25 MB). The player picks the size that fits the screen and the internet speed,
+// and moves up or down between pieces as it plays: 4K on big, sharp screens with fast internet.
+const FILM = "/intro/hls/master.m3u8";
+const FALLBACK = "/intro/film-720.mp4"; // for the rare browser that cannot play the pieces
 
 const LEAVE_MS = 900;
 
@@ -60,8 +51,7 @@ export default function IntroVideo() {
 function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
   const video = useRef<HTMLVideoElement>(null);
   const sound = useRef<IntroSound | null>(null);
-  const [src, setSrc] = useState(filmSrc);
-  const stall = useRef(0);
+  const fallback = useRef<() => void>(() => undefined);
   const [scene, setScene] = useState(0);
   const [progress, setProgress] = useState(0);
   const [waiting, setWaiting] = useState(true);
@@ -93,12 +83,45 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
     };
   }, []);
 
-  // start playing straight away (muted, so browsers allow it)
+  // load the film and start playing straight away (muted, so browsers allow it)
   useEffect(() => {
     const v = video.current;
     if (!v) return;
     v.muted = true;
-    v.play().catch(() => setBlocked(true));
+    let hls: { destroy: () => void } | null = null;
+    let cancelled = false;
+    const start = () => { v.play().catch(() => setBlocked(true)); };
+    fallback.current = () => {
+      hls?.destroy();
+      hls = null;
+      if (v.getAttribute("src") === FALLBACK) return finishRef.current();
+      v.src = FALLBACK;
+      start();
+    };
+    // hls.js picks the size (never bigger than the screen needs); browsers without it, such as older
+    // iPhones, play the pieces themselves
+    const native = () => {
+      if (!v.canPlayType("application/vnd.apple.mpegurl")) return fallback.current();
+      v.src = FILM;
+      start();
+    };
+    import("hls.js").then(({ default: Hls }) => {
+      if (cancelled) return;
+      if (!Hls.isSupported()) return native();
+      const h = new Hls({ capLevelToPlayerSize: true, abrEwmaDefaultEstimate: 12_000_000 });
+      hls = h;
+      h.on(Hls.Events.ERROR, (_e, data) => { if (data.fatal) fallback.current(); });
+      // phones top out at 1080p: sharp on a phone, and kind to mobile data
+      h.on(Hls.Events.MANIFEST_PARSED, (_e, data) => {
+        if (Math.min(window.innerWidth, window.innerHeight) >= 600) return;
+        const hd = data.levels.findIndex((l) => l.height === 1080);
+        if (hd >= 0) h.autoLevelCapping = hd;
+      });
+      h.loadSource(FILM);
+      h.attachMedia(v);
+      start();
+    }).catch(() => { if (!cancelled) native(); });
+    return () => { cancelled = true; hls?.destroy(); };
   }, []);
 
   // A short sound at each scene change (same as the scroll version). Browsers only allow sound
@@ -134,25 +157,10 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
     if (v.duration) setProgress(v.currentTime / v.duration);
   };
 
-  // 4K but the internet cannot keep up: carry on in 1080p from the same moment
-  const onWaiting = () => {
-    setWaiting(true);
-    if (src !== FILM_4K) return;
-    window.clearTimeout(stall.current);
-    stall.current = window.setTimeout(() => {
-      const v = video.current;
-      if (!v || src !== FILM_4K) return;
-      const t = v.currentTime;
-      setSrc(FILM_HD);
-      v.addEventListener("loadedmetadata", () => { v.currentTime = t; v.play().catch(() => setBlocked(true)); }, { once: true });
-    }, STALL_MS);
-  };
   const onPlaying = () => {
-    window.clearTimeout(stall.current);
     setWaiting(false);
     setBlocked(false);
   };
-  useEffect(() => () => window.clearTimeout(stall.current), []);
 
   const playByTap = () => {
     setBlocked(false);
@@ -165,7 +173,6 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
       <video
         ref={video}
         className="intro-video-film"
-        src={src}
         poster="/intro/spark.webp"
         muted
         autoPlay
@@ -173,10 +180,10 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
         preload="auto"
         disablePictureInPicture
         onTimeUpdate={onTime}
-        onWaiting={onWaiting}
+        onWaiting={() => setWaiting(true)}
         onPlaying={onPlaying}
         onEnded={finish}
-        onError={finish}
+        onError={() => fallback.current()}
         aria-hidden="true"
       />
       <div className="intro-video-shade" aria-hidden="true" />
