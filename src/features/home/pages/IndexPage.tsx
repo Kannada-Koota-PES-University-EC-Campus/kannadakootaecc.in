@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, Instagram, MoveUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import RepublicDayPopup from "@/features/home/components/RepublicDayPopup";
-import ScrollIntro from "@/features/intro/ScrollIntro";
+import IntroVideo from "@/features/intro/IntroVideo";
 
 const chapters = [
   { kannada: "ನೃತ್ಯ", title: "ತಾಳಕ್ಕೆ ಹೆಜ್ಜೆ ಹಾಕಿ.", tag: "THE CULTURE, IN MOTION", copy: "The beat starts somewhere. The whole campus joins in.", image: "/Events/KKEC DC 3.png", alt: "Kannada Koota dancers performing together" },
@@ -32,7 +32,7 @@ export default function Index() {
   return <div className="fest-home">
     <RepublicDayPopup />
 
-    <ScrollIntro />
+    <IntroVideo />
 
     <section className="poster-cover" id="home-start" aria-labelledby="poster-title">
       <div className="poster-backdrop"><img src="/Events/mahashivratri-dance1.jpeg" alt="" fetchPriority="high" /><span className="poster-shade" /></div>
