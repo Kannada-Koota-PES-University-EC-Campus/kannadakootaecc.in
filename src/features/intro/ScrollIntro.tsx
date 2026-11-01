@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, Volume2, VolumeX } from "lucide-react";
+import { ArrowDown, ArrowRight, Volume2, VolumeX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { mountScrollWorld, type IntroSection } from "@/features/intro/scrollWorld";
 import { IntroSound } from "@/features/intro/introSound";
@@ -26,7 +26,121 @@ const SOUND_KEY = "kkc-intro-sound";
 const readSound = () => { try { return localStorage.getItem(SOUND_KEY) !== "off"; } catch { return true; } };
 const saveSound = (on: boolean) => { try { localStorage.setItem(SOUND_KEY, on ? "on" : "off"); } catch { /* private mode */ } };
 
+const SKIP_KEY = "kkc-intro-skipped";
+const skippedThisVisit = () => { try { return sessionStorage.getItem(SKIP_KEY) === "1"; } catch { return false; } };
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+type Phase = "loading" | "ready" | "entered" | "skipped";
+
+/**
+ * The film is a lot of video, so it is downloaded in full behind a loading screen first;
+ * the visitor enters when it is ready (that click also lets the browser play the sounds),
+ * or skips straight to the website. Visitors who prefer reduced motion never load the
+ * videos (the film shows stills), so they go straight in.
+ */
 export default function ScrollIntro() {
+  const [phase, setPhase] = useState<Phase>(() => (skippedThisVisit() ? "skipped" : reducedMotion() ? "entered" : "loading"));
+  const [progress, setProgress] = useState({ loaded: 0, total: 0 });
+  const [clips, setClips] = useState<Record<string, string> | null>(null);
+
+  useEffect(() => {
+    if (phase !== "loading") return;
+    const ctrl = new AbortController();
+    preloadClips(SECTIONS.map((x) => x.clip), (loaded, total) => setProgress({ loaded, total }), ctrl.signal)
+      .then((map) => {
+        if (ctrl.signal.aborted) { Object.values(map).forEach((u) => URL.revokeObjectURL(u)); return; }
+        setClips(map);
+        setPhase("ready");
+      })
+      .catch(() => { if (!ctrl.signal.aborted) setPhase("ready"); }); // a failed download: the film loads clips itself
+    return () => ctrl.abort();
+  }, [phase]);
+
+  // the downloaded copies are freed only when the home page closes
+  useEffect(() => () => { if (clips) Object.values(clips).forEach((u) => URL.revokeObjectURL(u)); }, [clips]);
+
+  // nothing behind the loading screen scrolls
+  useEffect(() => {
+    if (phase !== "loading" && phase !== "ready") return;
+    window.scrollTo(0, 0);
+    const html = document.documentElement;
+    const prev = html.style.overflow;
+    html.style.overflow = "hidden";
+    return () => { html.style.overflow = prev; };
+  }, [phase]);
+
+  const skip = () => {
+    try { sessionStorage.setItem(SKIP_KEY, "1"); } catch { /* private mode */ }
+    setPhase("skipped");
+    window.scrollTo(0, 0);
+  };
+
+  if (phase === "skipped") return null;
+  return <>
+    {phase !== "loading" && <IntroFilm clips={clips} />}
+    {phase !== "entered" && <IntroLoader progress={progress} ready={phase === "ready"} onEnter={() => setPhase("entered")} onSkip={skip} />}
+  </>;
+}
+
+/** downloads every clip, reporting bytes loaded / total; resolves to blob: URLs keyed by the clip's address */
+async function preloadClips(srcs: string[], onProgress: (loaded: number, total: number) => void, signal: AbortSignal) {
+  const loaded = new Array(srcs.length).fill(0);
+  const sizes = new Array(srcs.length).fill(0);
+  const report = () => onProgress(loaded.reduce((a, b) => a + b, 0), sizes.reduce((a, b) => a + b, 0));
+  const blobs = await Promise.all(srcs.map(async (src, i) => {
+    const res = await fetch(src, { signal });
+    if (!res.ok) throw new Error(`${src}: ${res.status}`);
+    sizes[i] = Number(res.headers.get("content-length")) || 0;
+    if (!res.body) return res.blob();
+    const reader = res.body.getReader();
+    const parts: BlobPart[] = [];
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      parts.push(value);
+      loaded[i] += value.length;
+      if (!sizes[i]) sizes[i] = loaded[i];
+      report();
+    }
+    return new Blob(parts, { type: res.headers.get("content-type") || "video/mp4" });
+  }));
+  return Object.fromEntries(srcs.map((src, i) => [src, URL.createObjectURL(blobs[i])]));
+}
+
+function IntroLoader({ progress, ready, onEnter, onSkip }: { progress: { loaded: number; total: number }; ready: boolean; onEnter: () => void; onSkip: () => void }) {
+  const enterRef = useRef<HTMLButtonElement>(null);
+  const share = ready ? 1 : progress.total ? progress.loaded / progress.total : 0;
+  const mb = (b: number) => Math.round(b / 1048576);
+  const [leaving, setLeaving] = useState(false);
+  useEffect(() => { if (ready) enterRef.current?.focus(); }, [ready]);
+  const enter = () => { setLeaving(true); window.setTimeout(onEnter, 650); };
+  return (
+    <div className={`intro-loader${ready ? " is-ready" : ""}${leaving ? " is-leaving" : ""}`} role="dialog" aria-modal="true" aria-label="The Kannada Koota film is loading">
+      <div className="intro-loader-center">
+        <div className="intro-loader-ring" style={{ "--p": share } as React.CSSProperties}>
+          <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" /><circle className="intro-loader-arc" cx="60" cy="60" r="54" pathLength={1} /></svg>
+          <img src="/KKCEC-ECON.png" alt="" />
+        </div>
+        <p className="intro-loader-name kn">ಕನ್ನಡ ಕೂಟ</p>
+        {ready ? (
+          <>
+            <p className="intro-loader-status"><span className="kn">ಚಿತ್ರ ಸಿದ್ಧವಾಗಿದೆ</span> · The film is ready</p>
+            <button ref={enterRef} type="button" className="intro-loader-enter" onClick={enter}><span className="kn">ಒಳಗೆ ಬನ್ನಿ</span> · Enter <ArrowRight size={16} /></button>
+          </>
+        ) : (
+          <p className="intro-loader-status" aria-live="polite">
+            <span className="kn">ಚಿತ್ರ ಸಿದ್ಧವಾಗುತ್ತಿದೆ</span> · Preparing the film · <b>{Math.floor(share * 100)}%</b>
+            {progress.total > 0 && <small>{mb(progress.loaded)} of {mb(progress.total)} MB</small>}
+          </p>
+        )}
+      </div>
+      <button type="button" className="intro-loader-skip" onClick={onSkip}><span className="kn">ನೇರವಾಗಿ ಮುಖಪುಟಕ್ಕೆ</span> · Skip to the website <ArrowRight size={15} /></button>
+    </div>
+  );
+}
+
+/** the film itself (unchanged); `clips` are already-downloaded copies of the clip files */
+function IntroFilm({ clips }: { clips: Record<string, string> | null }) {
   const ref = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const navigate = useNavigate();
@@ -89,7 +203,8 @@ export default function ScrollIntro() {
   useEffect(() => {
     const host = ref.current;
     if (!host) return;
-    const unmount = mountScrollWorld(host, { sections: SECTIONS, crossfade: 0.1, hint: "scroll to begin", onScene: (i, inView) => sound.current?.setScene(i, inView) });
+    const sections = clips ? SECTIONS.map((x) => ({ ...x, clip: clips[x.clip] ?? x.clip })) : SECTIONS;
+    const unmount = mountScrollWorld(host, { sections, crossfade: 0.1, hint: "scroll to begin", onScene: (i, inView) => sound.current?.setScene(i, inView) });
     // the engine renders plain links; send the site's own pages through the router
     const onClick = (e: MouseEvent) => {
       const link = (e.target as HTMLElement).closest("a");
@@ -100,7 +215,7 @@ export default function ScrollIntro() {
     };
     host.addEventListener("click", onClick);
     return () => { host.removeEventListener("click", onClick); unmount(); };
-  }, [navigate]);
+  }, [navigate, clips]);
 
   return <section ref={sectionRef} className="scroll-intro" aria-label="Kannada Koota: a short scroll-through film">
     {/* the buttons ride on a screen-tall sticky layer, so they leave together with the film */}
