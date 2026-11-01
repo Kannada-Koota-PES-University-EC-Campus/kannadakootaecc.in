@@ -34,11 +34,20 @@ const SOUND_KEY = "kkc-intro-sound";
 const readSound = () => { try { return localStorage.getItem(SOUND_KEY) !== "off"; } catch { return true; } };
 const saveSound = (on: boolean) => { try { localStorage.setItem(SOUND_KEY, on ? "on" : "off"); } catch { /* private mode */ } };
 
-// phones and data-saver visitors get the lighter 720p film
+// Each screen gets the film it can show: 4K only on big, sharp screens with fast internet,
+// 1080p on ordinary laptops, 720p on phones and for data-saver visitors.
+const FILM_4K = "/intro/film-2160.mp4";
+const FILM_HD = "/intro/film-1080.mp4";
 const filmSrc = () => {
-  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-  return saveData || Math.min(window.innerWidth, window.innerHeight) < 600 ? "/intro/film-720.mp4" : "/intro/film-1080.mp4";
+  const conn = (navigator as Navigator & { connection?: { saveData?: boolean; downlink?: number } }).connection;
+  if (conn?.saveData || Math.min(window.innerWidth, window.innerHeight) < 600) return "/intro/film-720.mp4";
+  const screenPx = Math.max(window.innerWidth, window.innerHeight) * (window.devicePixelRatio || 1);
+  // Mbps, a rough guess where the browser gives one (Chrome never says more than 10); if 4K still
+  // cannot keep up, the film drops to 1080p by itself (see onWaiting)
+  const slow = conn?.downlink !== undefined && conn.downlink < 5;
+  return screenPx >= 2400 && !slow ? FILM_4K : FILM_HD;
 };
+const STALL_MS = 2500; // the 4K film buffering this long falls back to 1080p
 
 const LEAVE_MS = 900;
 
@@ -51,7 +60,8 @@ export default function IntroVideo() {
 function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
   const video = useRef<HTMLVideoElement>(null);
   const sound = useRef<IntroSound | null>(null);
-  const [src] = useState(filmSrc);
+  const [src, setSrc] = useState(filmSrc);
+  const stall = useRef(0);
   const [scene, setScene] = useState(0);
   const [progress, setProgress] = useState(0);
   const [waiting, setWaiting] = useState(true);
@@ -124,6 +134,26 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
     if (v.duration) setProgress(v.currentTime / v.duration);
   };
 
+  // 4K but the internet cannot keep up: carry on in 1080p from the same moment
+  const onWaiting = () => {
+    setWaiting(true);
+    if (src !== FILM_4K) return;
+    window.clearTimeout(stall.current);
+    stall.current = window.setTimeout(() => {
+      const v = video.current;
+      if (!v || src !== FILM_4K) return;
+      const t = v.currentTime;
+      setSrc(FILM_HD);
+      v.addEventListener("loadedmetadata", () => { v.currentTime = t; v.play().catch(() => setBlocked(true)); }, { once: true });
+    }, STALL_MS);
+  };
+  const onPlaying = () => {
+    window.clearTimeout(stall.current);
+    setWaiting(false);
+    setBlocked(false);
+  };
+  useEffect(() => () => window.clearTimeout(stall.current), []);
+
   const playByTap = () => {
     setBlocked(false);
     video.current?.play().catch(() => setBlocked(true));
@@ -143,8 +173,8 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
         preload="auto"
         disablePictureInPicture
         onTimeUpdate={onTime}
-        onWaiting={() => setWaiting(true)}
-        onPlaying={() => { setWaiting(false); setBlocked(false); }}
+        onWaiting={onWaiting}
+        onPlaying={onPlaying}
         onEnded={finish}
         onError={finish}
         aria-hidden="true"
