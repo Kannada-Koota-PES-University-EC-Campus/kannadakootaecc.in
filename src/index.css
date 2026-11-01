@@ -785,3 +785,23 @@ All colors MUST be HSL.
   .poster-description p { font-size:15px; }
   .poster-photo-card { width:min(32vw,620px); height:min(64vh,640px); right:9%; }
 }
+
+/* scroll-scrubbed intro film above the home page (src/features/intro) */
+.fest-home:has(> .scroll-intro) { overflow:visible; overflow-x:clip; }
+.scroll-intro { position:relative; background:#0b0b0d; }
+.scroll-intro-ui { position:sticky; top:0; z-index:5; height:100vh; height:100dvh; pointer-events:none; }
+.scroll-intro-ui + .sw-root { margin-top:-100vh; margin-top:-100dvh; }
+.scroll-intro-ui > * { pointer-events:auto; }
+.scroll-intro-skip { position:absolute; z-index:45; right:clamp(16px,3vw,40px); bottom:24px; display:flex; align-items:center; gap:8px; padding:10px 14px; color:#f5ecd5; background:rgba(11,11,13,.55); border:1px solid rgba(243,207,67,.45); backdrop-filter:blur(8px); font-size:10px; font-weight:800; letter-spacing:.14em; text-decoration:none; }
+.scroll-intro-skip:hover { color:#101012; background:#f3cf43; }
+.scroll-intro-skip svg { color:#f3cf43; }.scroll-intro-skip:hover svg { color:#101012; }
+.scroll-intro-sound { position:absolute; z-index:45; top:calc(18px + env(safe-area-inset-top)); right:clamp(16px,3vw,40px); display:flex; align-items:center; gap:9px; padding:10px 14px; color:#f5ecd5; background:rgba(11,11,13,.55); border:1px solid rgba(243,207,67,.45); backdrop-filter:blur(8px); font:inherit; font-size:10px; font-weight:800; letter-spacing:.12em; cursor:pointer; animation:intro-sound-call 2.4s ease-in-out infinite; }
+.scroll-intro-sound svg { color:#f3cf43; flex:none; }
+.scroll-intro-sound:hover { border-color:#f3cf43; }
+.scroll-intro-sound.is-on { animation:none; border-color:rgba(243,207,67,.25); }
+@keyframes intro-sound-call { 0%,100% { box-shadow:0 0 0 0 rgba(243,207,67,0); } 50% { box-shadow:0 0 0 6px rgba(243,207,67,.16); } }
+@media (max-width:650px) { .scroll-intro-sound { padding:9px 11px; font-size:9px; } }
+@media (prefers-reduced-motion:reduce) { .scroll-intro-sound { animation:none; } }
+#home-start { scroll-margin-top:68px; }
+.site-nav { transition:transform .35s ease, opacity .35s ease; }
+.site-nav.nav-hidden-for-intro { transform:translateY(-100%); opacity:0; pointer-events:none; }

@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, Instagram, MoveUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import RepublicDayPopup from "@/features/home/components/RepublicDayPopup";
+import ScrollIntro from "@/features/intro/ScrollIntro";
 
 const chapters = [
   { kannada: "ನೃತ್ಯ", title: "ತಾಳಕ್ಕೆ ಹೆಜ್ಜೆ ಹಾಕಿ.", tag: "THE CULTURE, IN MOTION", copy: "The beat starts somewhere. The whole campus joins in.", image: "/Events/KKEC DC 3.png", alt: "Kannada Koota dancers performing together" },
@@ -31,7 +32,9 @@ export default function Index() {
   return <div className="fest-home">
     <RepublicDayPopup />
 
-    <section className="poster-cover" aria-labelledby="poster-title">
+    <ScrollIntro />
+
+    <section className="poster-cover" id="home-start" aria-labelledby="poster-title">
       <div className="poster-backdrop"><img src="/Events/mahashivratri-dance1.jpeg" alt="" fetchPriority="high" /><span className="poster-shade" /></div>
       <div className="poster-topline"><span className="pes-ticket"><span className="pes-ticket-mark">P</span> PES UNIVERSITY <i/> EC CAMPUS</span><span className="poster-edition">ಕನ್ನಡ ಕೂಟ <b>·</b> 2026</span></div>
       <div className="poster-copy">
