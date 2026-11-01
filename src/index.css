@@ -91,8 +91,8 @@ body { background: #f7f4ed; color: #28231f; font-family: 'DM Sans', 'Inter', sys
 
 /* Midnight palette: ink, temple brass and a restrained vermilion. */
 :root { --background: 225 13% 6%; --foreground: 38 28% 91%; --surface: 225 11% 9%; --surface-foreground: 38 28% 91%; --primary: 39 64% 61%; --primary-foreground: 225 13% 6%; --primary-muted: 35 24% 17%; --secondary: 225 9% 13%; --secondary-foreground: 38 28% 91%; --accent: 8 52% 52%; --accent-foreground: 38 28% 95%; --muted: 225 8% 16%; --muted-foreground: 31 10% 62%; --border: 225 7% 23%; --input: 225 8% 15%; --ring: 39 64% 61%; --card: 225 11% 10%; --card-foreground: 38 28% 91%; --popover: 225 11% 10%; --popover-foreground: 38 28% 91%; }
-body { background:#0d0e12; color:#eee9df; cursor:none; }
-a,button,[role="button"],input,textarea,select { cursor:none; }
+body { background:#0d0e12; color:#eee9df; }
+a,button,[role="button"],select { cursor:pointer; }
 .site-nav { background:rgba(13,14,18,.9); border-color:rgba(255,255,255,.085); }
 .brand { color:#f1ece3; }.brand small { color:#a9a197; }.desktop-nav a { color:#b8b1a8; }.desktop-nav a:hover,.desktop-nav .nav-current { color:#e6bc6c; }.nav-join { color:#171614; background:#ddb96d; }.nav-join:hover { color:#15130f; background:#f0d393; }
 .home-page { background:#0d0e12; }.intro-strip { color:#f0e9dc; background:#15161b; border-top:1px solid rgba(231,190,109,.14); border-bottom:1px solid rgba(255,255,255,.055); }.intro-strip .eyebrow,.intro-strip .intro-mark { color:#d9b466; }.intro-strip p em { color:#e7bd70; }
