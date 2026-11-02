@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Play, Volume2, VolumeX } from "lucide-react";
+import { ArrowRight, Play } from "lucide-react";
 
 /*
  * The intro film, played as a video: it starts as soon as the home page opens, a caption names each
@@ -29,23 +29,11 @@ const seenThisVisit = () => { try { return sessionStorage.getItem(SEEN_KEY) === 
 const markSeen = () => { try { sessionStorage.setItem(SEEN_KEY, "1"); } catch { /* private mode */ } };
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const SOUND_KEY = "kkc-intro-sound";
-const readSound = () => { try { return localStorage.getItem(SOUND_KEY) !== "off"; } catch { return true; } };
-const saveSound = (on: boolean) => { try { localStorage.setItem(SOUND_KEY, on ? "on" : "off"); } catch { /* private mode */ } };
-
 // The film is cut into 4-second pieces at 4K, 1080p and 720p (public/intro/hls; the host only
 // takes files under 25 MB). The player picks the size that fits the screen and the internet speed,
 // and moves up or down between pieces as it plays: 4K on big, sharp screens with fast internet.
 const FILM = "/intro/hls/master.m3u8";
 const FALLBACK = "/intro/film-720.mp4"; // for the rare browser that cannot play the pieces
-
-// An original cinematic score made for this film (public/intro/music.m4a): strings, tanpura and a
-// bansuri-style melody in raga Mohanam, a deep drum at each scene change and a swell with a temple
-// bell as the Kannada Koota logo appears. It plays alongside the film and is kept in step with it.
-// Browsers only allow sound after a click, tap or key press, so it starts on the visitor's first one
-// (or the music button).
-const MUSIC = "/intro/music.m4a";
-const DRIFT = 0.25; // seconds the music may run ahead or behind before it is put back in step
 
 const LEAVE_MS = 900;
 
@@ -57,19 +45,15 @@ export default function IntroVideo() {
 
 function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
   const video = useRef<HTMLVideoElement>(null);
-  const music = useRef<HTMLAudioElement>(null);
   const fallback = useRef<() => void>(() => undefined);
   const [scene, setScene] = useState(0);
   const [progress, setProgress] = useState(0);
   const [waiting, setWaiting] = useState(true);
   const [blocked, setBlocked] = useState(false); // the browser refused to start the video by itself
   const [leaving, setLeaving] = useState(false);
-  const [soundOn, setSoundOn] = useState(readSound);
-  const [hearing, setHearing] = useState(false); // the music is actually playing
 
   const finish = () => {
     if (leaving) return;
-    fadeMusic();
     markSeen();
     setLeaving(true);
     window.setTimeout(onDone, reducedMotion() ? 0 : LEAVE_MS);
@@ -133,68 +117,19 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
     return () => { cancelled = true; hls?.destroy(); };
   }, []);
 
-  // start the music at the film's moment (needs a click, tap or key press first)
-  const startMusic = () => {
-    const a = music.current;
-    const v = video.current;
-    if (!a || !v) return;
-    a.volume = 1;
-    a.currentTime = v.currentTime;
-    a.play().then(() => setHearing(true)).catch(() => setHearing(false));
-  };
-  const stopMusic = () => { music.current?.pause(); setHearing(false); };
-  // the screen slides away: the music fades out with it
-  const fadeMusic = () => {
-    const a = music.current;
-    if (!a || a.paused) return;
-    const step = window.setInterval(() => {
-      a.volume = Math.max(0, a.volume - 0.1);
-      if (a.volume <= 0.01) { window.clearInterval(step); a.pause(); }
-    }, LEAVE_MS / 10);
-  };
-  const startMusicRef = useRef(startMusic);
-  startMusicRef.current = startMusic;
-
-  useEffect(() => {
-    const events = ["touchend", "pointerdown", "keydown"] as const;
-    const stop = () => events.forEach((e) => window.removeEventListener(e, unlock, true));
-    function unlock(e: Event) {
-      const t = e.target as Element | null;
-      if (t?.closest?.(".intro-video-sound, .intro-video-skip")) return; // those buttons decide for themselves
-      stop();
-      if (readSound()) startMusicRef.current();
-    }
-    events.forEach((e) => window.addEventListener(e, unlock, { capture: true, passive: true }));
-    return stop;
-  }, []);
-
-  const toggleSound = () => {
-    // shown as on but not heard yet (no tap so far): this tap starts it
-    const turnOn = !soundOn || !hearing;
-    if (turnOn) startMusic(); else stopMusic();
-    setSoundOn(turnOn);
-    saveSound(turnOn);
-  };
-
   const onTime = () => {
     const v = video.current;
     if (!v) return;
     const i = sceneAt(v.currentTime);
     if (i !== scene) setScene(i);
     if (v.duration) setProgress(v.currentTime / v.duration);
-    const a = music.current;
-    if (a && !a.paused && Math.abs(a.currentTime - v.currentTime) > DRIFT) a.currentTime = v.currentTime;
   };
 
   const onPlaying = () => {
     setWaiting(false);
     setBlocked(false);
-    if (hearing && music.current?.paused) startMusic(); // carry on after the film paused to load
   };
-  const onWaiting = () => {
-    setWaiting(true);
-    music.current?.pause(); // the music waits for the film
-  };
+
 
   const playByTap = () => {
     setBlocked(false);
@@ -214,13 +149,12 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
         preload="auto"
         disablePictureInPicture
         onTimeUpdate={onTime}
-        onWaiting={onWaiting}
+        onWaiting={() => setWaiting(true)}
         onPlaying={onPlaying}
         onEnded={finish}
         onError={() => fallback.current()}
         aria-hidden="true"
       />
-      <audio ref={music} src={MUSIC} preload="auto" />
       <div className="intro-video-shade" aria-hidden="true" />
 
       <div key={scene} className="intro-video-caption" aria-live="polite">
@@ -236,9 +170,6 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
         </button>
       )}
 
-      <button type="button" className={`intro-video-sound${soundOn && !hearing ? " is-waiting" : ""}`} onClick={toggleSound} aria-pressed={soundOn && hearing}>
-        {soundOn && hearing ? <Volume2 size={15} /> : <VolumeX size={15} />} <span className="kn">ಸಂಗೀತ</span> · {!soundOn ? "MUSIC OFF" : hearing ? "MUSIC ON" : "TAP FOR MUSIC"}
-      </button>
       <button type="button" className="intro-video-skip" onClick={finish}>
         <span className="kn">ನೇರವಾಗಿ ಮುಖಪುಟಕ್ಕೆ</span> · Skip to the website <ArrowRight size={15} />
       </button>
