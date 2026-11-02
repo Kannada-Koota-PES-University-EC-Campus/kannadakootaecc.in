@@ -101,14 +101,28 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
     import("hls.js").then(({ default: Hls }) => {
       if (cancelled) return;
       if (!Hls.isSupported()) return native();
-      const h = new Hls({ capLevelToPlayerSize: true, abrEwmaDefaultEstimate: 12_000_000 });
+      const phone = Math.min(window.innerWidth, window.innerHeight) < 600;
+      const h = new Hls({
+        capLevelOnFPSDrop: true, // a device that drops frames at 4K steps down instead of stuttering
+        abrEwmaDefaultEstimate: phone ? 12_000_000 : 40_000_000, // start at the top: 4K (phones: 1080p)
+        abrBandWidthFactor: 0.9,
+        maxBufferLength: 40, // fetch the whole 37 s film ahead, so it never waits mid-way
+        maxMaxBufferLength: 60,
+        startFragPrefetch: true,
+      });
       hls = h;
       h.on(Hls.Events.ERROR, (_e, data) => { if (data.fatal) fallback.current(); });
-      // phones top out at 1080p: sharp on a phone, and kind to mobile data
+      // Maximum clarity: 4K on laptops and desktops, never below 1080p; phones top out at 1080p
+      // (already sharper than a phone screen) to keep them smooth and kind to mobile data.
       h.on(Hls.Events.MANIFEST_PARSED, (_e, data) => {
-        if (Math.min(window.innerWidth, window.innerHeight) >= 600) return;
         const hd = data.levels.findIndex((l) => l.height === 1080);
-        if (hd >= 0) h.autoLevelCapping = hd;
+        const top = data.levels.reduce((best, l, k) => (l.height > data.levels[best].height ? k : best), 0);
+        if (phone) {
+          if (hd >= 0) { h.autoLevelCapping = hd; h.startLevel = hd; }
+        } else {
+          h.startLevel = top;
+          if (hd >= 0) h.config.minAutoBitrate = data.levels[hd].bitrate;
+        }
       });
       h.loadSource(FILM);
       h.attachMedia(v);
