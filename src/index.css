@@ -845,7 +845,7 @@ All colors MUST be HSL.
 .intro-video-play { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border:0; border-radius:999px; background:#f3cf43; color:#17130c; font:inherit; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 10px 40px rgba(0,0,0,.45); }
 .intro-video-sound { position:absolute; z-index:2; top:calc(18px + env(safe-area-inset-top)); right:clamp(16px,3vw,40px); display:flex; align-items:center; gap:9px; padding:10px 14px; color:#f5ecd5; background:rgba(11,11,13,.55); border:1px solid rgba(243,207,67,.45); backdrop-filter:blur(8px); font:inherit; font-size:10px; font-weight:800; letter-spacing:.12em; cursor:pointer; }
 .intro-video-sound svg { color:#f3cf43; flex:none; }
-.intro-video-sound:hover { border-color:#f3cf43; }
+.intro-video-sound:hover { border-color:#f3cf43; } .intro-video-sound.is-waiting { animation:intro-sound-call 2.4s ease-in-out infinite; }
 .intro-video-skip { position:absolute; z-index:2; left:50%; bottom:calc(26px + env(safe-area-inset-bottom)); transform:translateX(-50%); display:inline-flex; align-items:center; gap:8px; padding:11px 20px; border:1px solid rgba(243,207,67,.55); border-radius:999px; background:rgba(11,11,13,.55); backdrop-filter:blur(8px); color:#f6eedf; font:inherit; font-size:13px; cursor:pointer; white-space:nowrap; transition:background .2s ease, color .2s ease; }
 .intro-video-skip svg { color:#f3cf43; }
 .intro-video-skip:hover { background:#f3cf43; color:#17130c; }.intro-video-skip:hover svg { color:#17130c; }
