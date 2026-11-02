@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Play, Volume2, VolumeX } from "lucide-react";
+import { IntroSound } from "@/features/intro/introSound";
 
 /*
  * The intro film, played as a video: it starts as soon as the home page opens, a caption names each
@@ -12,7 +13,7 @@ import { ArrowRight, Play, Volume2, VolumeX } from "lucide-react";
  * All Kannada text stays here as real HTML, never inside the video.
  */
 
-// the seven scenes of the film and when each begins (seconds)
+// public/intro/film-*.mp4 is the seven scenes of the scroll version joined into one film
 const SCENES = [
   { at: 0, eyebrow: "ಕಿಡಿ · THE SPARK", title: "ಒಂದು ಕಿಡಿ.", body: "Every story begins with a spark. Ours begins with a language." },
   { at: 4, eyebrow: "ನಾಡು · THE LAND", title: "ಕರುನಾಡು.", body: "Old rocks, slow rivers, morning mist. The land that gave us our words." },
@@ -33,10 +34,11 @@ const SOUND_KEY = "kkc-intro-sound";
 const readSound = () => { try { return localStorage.getItem(SOUND_KEY) !== "off"; } catch { return true; } };
 const saveSound = (on: boolean) => { try { localStorage.setItem(SOUND_KEY, on ? "on" : "off"); } catch { /* private mode */ } };
 
-// The intro film, with its own background music (cleaned up): one small file, public/intro/intro.mp4.
-// It starts muted, since browsers only allow sound after a click, tap or key press; the music comes
-// on with the visitor's first one (or the music button).
-const FILM = "/intro/intro.mp4";
+// The film is cut into 4-second pieces at 4K, 1080p and 720p (public/intro/hls; the host only
+// takes files under 25 MB). The player picks the size that fits the screen and the internet speed,
+// and moves up or down between pieces as it plays: 4K on big, sharp screens with fast internet.
+const FILM = "/intro/hls/master.m3u8";
+const FALLBACK = "/intro/film-720.mp4"; // for the rare browser that cannot play the pieces
 
 const LEAVE_MS = 900;
 
@@ -48,17 +50,17 @@ export default function IntroVideo() {
 
 function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
   const video = useRef<HTMLVideoElement>(null);
+  const sound = useRef<IntroSound | null>(null);
+  const fallback = useRef<() => void>(() => undefined);
   const [scene, setScene] = useState(0);
   const [progress, setProgress] = useState(0);
   const [waiting, setWaiting] = useState(true);
   const [blocked, setBlocked] = useState(false); // the browser refused to start the video by itself
   const [leaving, setLeaving] = useState(false);
   const [soundOn, setSoundOn] = useState(readSound);
-  const [hearing, setHearing] = useState(false); // the music is actually playing
 
   const finish = () => {
     if (leaving) return;
-    fadeMusic();
     markSeen();
     setLeaving(true);
     window.setTimeout(onDone, reducedMotion() ? 0 : LEAVE_MS);
@@ -81,57 +83,68 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
     };
   }, []);
 
-  // start playing straight away (muted, so browsers allow it)
+  // load the film and start playing straight away (muted, so browsers allow it)
   useEffect(() => {
     const v = video.current;
     if (!v) return;
     v.muted = true;
-    v.play().catch(() => setBlocked(true));
+    let hls: { destroy: () => void } | null = null;
+    let cancelled = false;
+    const start = () => { v.play().catch(() => setBlocked(true)); };
+    fallback.current = () => {
+      hls?.destroy();
+      hls = null;
+      if (v.getAttribute("src") === FALLBACK) return finishRef.current();
+      v.src = FALLBACK;
+      start();
+    };
+    // hls.js picks the size (never bigger than the screen needs); browsers without it, such as older
+    // iPhones, play the pieces themselves
+    const native = () => {
+      if (!v.canPlayType("application/vnd.apple.mpegurl")) return fallback.current();
+      v.src = FILM;
+      start();
+    };
+    import("hls.js").then(({ default: Hls }) => {
+      if (cancelled) return;
+      if (!Hls.isSupported()) return native();
+      const h = new Hls({ capLevelToPlayerSize: true, abrEwmaDefaultEstimate: 12_000_000 });
+      hls = h;
+      h.on(Hls.Events.ERROR, (_e, data) => { if (data.fatal) fallback.current(); });
+      // phones top out at 1080p: sharp on a phone, and kind to mobile data
+      h.on(Hls.Events.MANIFEST_PARSED, (_e, data) => {
+        if (Math.min(window.innerWidth, window.innerHeight) >= 600) return;
+        const hd = data.levels.findIndex((l) => l.height === 1080);
+        if (hd >= 0) h.autoLevelCapping = hd;
+      });
+      h.loadSource(FILM);
+      h.attachMedia(v);
+      start();
+    }).catch(() => { if (!cancelled) native(); });
+    return () => { cancelled = true; hls?.destroy(); };
   }, []);
 
-  const musicOn = () => {
-    const v = video.current;
-    if (!v) return;
-    v.volume = 1;
-    v.muted = false;
-    setHearing(true);
-    if (v.paused && !v.ended) v.play().catch(() => { v.muted = true; setHearing(false); });
-  };
-  const musicOff = () => {
-    const v = video.current;
-    if (v) v.muted = true;
-    setHearing(false);
-  };
-  // the screen slides away: the music fades out with it
-  const fadeMusic = () => {
-    const v = video.current;
-    if (!v || v.muted) return;
-    const step = window.setInterval(() => {
-      v.volume = Math.max(0, v.volume - 0.1);
-      if (v.volume <= 0.01) window.clearInterval(step);
-    }, LEAVE_MS / 10);
-  };
-  const musicOnRef = useRef(musicOn);
-  musicOnRef.current = musicOn;
-
-  // the visitor's first click, tap or key press brings the music in
+  // A short sound at each scene change (same as the scroll version). Browsers only allow sound
+  // after a click, tap or key press, so it starts on the visitor's first one.
   useEffect(() => {
-    const events = ["touchend", "pointerdown", "keydown"] as const;
+    const s = new IntroSound();
+    sound.current = s;
+    const events = ["touchstart", "touchend", "pointerdown", "keydown"] as const;
     const stop = () => events.forEach((e) => window.removeEventListener(e, unlock, true));
     function unlock(e: Event) {
-      const t = e.target as Element | null;
-      if (t?.closest?.(".intro-video-sound, .intro-video-skip")) return; // those buttons decide for themselves
-      stop();
-      if (readSound()) musicOnRef.current();
+      if ((e.target as Element | null)?.closest?.(".intro-video-sound")) return;
+      if (!readSound() || s.isRunning) return stop();
+      s.enable(false);
     }
     events.forEach((e) => window.addEventListener(e, unlock, { capture: true, passive: true }));
-    return stop;
+    return () => { stop(); s.dispose(); sound.current = null; };
   }, []);
 
   const toggleSound = () => {
-    // shown as on but not heard yet (no tap so far): this tap starts it
-    const turnOn = !soundOn || !hearing;
-    if (turnOn) musicOn(); else musicOff();
+    const s = sound.current;
+    if (!s) return;
+    const turnOn = !soundOn;
+    if (turnOn) s.enable(); else s.disable();
     setSoundOn(turnOn);
     saveSound(turnOn);
   };
@@ -140,7 +153,7 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
     const v = video.current;
     if (!v) return;
     const i = sceneAt(v.currentTime);
-    if (i !== scene) setScene(i);
+    if (i !== scene) { setScene(i); sound.current?.setScene(i, true); }
     if (v.duration) setProgress(v.currentTime / v.duration);
   };
 
@@ -160,7 +173,6 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
       <video
         ref={video}
         className="intro-video-film"
-        src={FILM}
         poster="/intro/spark.webp"
         muted
         autoPlay
@@ -171,7 +183,7 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
         onWaiting={() => setWaiting(true)}
         onPlaying={onPlaying}
         onEnded={finish}
-        onError={finish}
+        onError={() => fallback.current()}
         aria-hidden="true"
       />
       <div className="intro-video-shade" aria-hidden="true" />
@@ -189,8 +201,8 @@ function IntroVideoPlayer({ onDone }: { onDone: () => void }) {
         </button>
       )}
 
-      <button type="button" className={`intro-video-sound${soundOn && !hearing ? " is-waiting" : ""}`} onClick={toggleSound} aria-pressed={soundOn && hearing}>
-        {soundOn && hearing ? <Volume2 size={15} /> : <VolumeX size={15} />} <span className="kn">ಸಂಗೀತ</span> · {!soundOn ? "MUSIC OFF" : hearing ? "MUSIC ON" : "TAP FOR MUSIC"}
+      <button type="button" className="intro-video-sound" onClick={toggleSound} aria-pressed={soundOn}>
+        {soundOn ? <Volume2 size={15} /> : <VolumeX size={15} />} <span className="kn">ಧ್ವನಿ</span> · {soundOn ? "SOUND ON" : "SOUND OFF"}
       </button>
       <button type="button" className="intro-video-skip" onClick={finish}>
         <span className="kn">ನೇರವಾಗಿ ಮುಖಪುಟಕ್ಕೆ</span> · Skip to the website <ArrowRight size={15} />
