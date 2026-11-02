@@ -775,6 +775,7 @@ All colors MUST be HSL.
   .poster-copy { position:relative; top:auto; left:auto; right:auto; margin:44px 0 0; }
   .poster-photo-card { position:relative; top:auto; right:auto; bottom:auto; align-self:center; width:min(78vw,340px); height:min(62vw,280px); margin:38px auto 30px; }
   .poster-sticker { position:relative; top:auto; bottom:auto; right:auto; align-self:flex-end; margin:-96px 2vw 30px 0; }
+  .poster-cutout { top:22px; right:4%; scale:.86; transform-origin:top right; } /* below the "student culture club" line, beside the big ಕನ್ನಡ */
   .poster-foot { margin-top:auto; }
 }
 
